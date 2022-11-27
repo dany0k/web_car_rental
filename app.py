@@ -49,6 +49,39 @@ def create():
     return render_template('create.html')
 
 
+@app.route('/<int:client_id>/edit', methods=('GET', 'POST'))
+def edit(client_id):
+    cur_client = get_client(client_id)
+
+    if request.method == 'POST':
+        firstname = request.form['firstname']
+        surname = request.form['surname']
+        violation = request.form['violation']
+
+        if not firstname or not surname or not violation:
+            flash('Please fill all fields')
+        else:
+            conn = get_db_connection()
+            conn.execute('UPDATE client SET firstname = ?, surname = ?, violation = ?'
+                         ' WHERE client_id = ?',
+                         (firstname, surname, violation, client_id))
+            conn.commit()
+            conn.close()
+            return redirect(url_for('index'))
+
+    return render_template('edit.html', post=cur_client)
+
+
+@app.route('/<int:client_id>/delete', methods=('POST',))
+def delete(client_id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM client WHERE client_id = ?', (client_id,))
+    conn.commit()
+    conn.close()
+    flash('Client was successfully deleted!')
+    return redirect(url_for('index'))
+
+
 @app.route('/')
 def index():
     conn = get_db_connection()
