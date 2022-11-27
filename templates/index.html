@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} CarRental web version {% endblock %}</h1>
+    <h1>{% block title %} Clients {% endblock %}</h1>
 {% for post in posts %}
-        <a href="{{ url_for('post', post_id=post['id']) }}">
-            <h2>{{ post['title'] }}</h2>
+        <a href="{{ url_for('client', client_id=post['client_id']) }}">
+            <h2>{{ post['firstname'] }} {{ post['surname'] }}</h2>
         </a>
-        <span class="badge badge-primary">{{ post['created'] }}</span>
+        <span class="badge badge-primary">id: {{ post['client_id'] }}</span>
         <hr>
     {% endfor %}
 {% endblock %}

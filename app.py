@@ -3,7 +3,7 @@ import sqlite3
 from flask import Flask, render_template, abort
 
 app = Flask(__name__)
-
+app.config['SECRET_KEY'] = 'secret_key'
 
 def get_db_connection():
     conn = sqlite3.connect('./db/carrental.db')
@@ -11,25 +11,30 @@ def get_db_connection():
     return conn
 
 
-def get_client(post_id):
+def get_client(client_id):
     conn = get_db_connection()
-    client = conn.execute('SELECT * FROM client WHERE client_id = ?',
-                        (post_id,)).fetchone()
+    client = conn.execute('SELECT * FROM client WHERE client_id=?',
+                        (client_id,)).fetchone()
     conn.close()
     if client is None:
         abort(404)
     return client
 
 
-@app.route('/<int:post_id>')
-def client(post_id):
-    client = get_client(post_id)
-    return render_template('post.html', post=client)
+@app.route('/<int:client_id>')
+def client(client_id):
+    cur_client = get_client(client_id)
+    return render_template('client.html', post=cur_client)
+
+
+@app.route('/create', methods=('GET', 'POST'))
+def create():
+    return render_template('create.html')
 
 
 @app.route('/')
 def index():
     conn = get_db_connection()
-    posts = conn.execute('SELECT * FROM client').fetchall()
+    cur_client = conn.execute('SELECT * FROM client').fetchall()
     conn.close()
-    return render_template('index.html', posts=posts)
+    return render_template('index.html', posts=cur_client)
