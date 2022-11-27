@@ -1,6 +1,6 @@
 import sqlite3
 
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, request, flash, redirect, url_for
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret_key'
@@ -29,6 +29,23 @@ def client(client_id):
 
 @app.route('/create', methods=('GET', 'POST'))
 def create():
+    if request.method == 'POST':
+        firstname = request.form['firstname']
+        surname = request.form['surname']
+        violation = request.form['violation']
+
+        print(firstname, surname, violation)
+
+        if not firstname or not surname or not violation:
+            flash('Please fill all fields')
+        else:
+            conn = get_db_connection()
+            conn.execute('INSERT INTO client (firstname, surname, violation) VALUES (?, ?, ?)',
+                         (firstname, surname, violation))
+            conn.commit()
+            conn.close()
+            # return redirect(url_for('index'))
+
     return render_template('create.html')
 
 
