@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{% block title %} {{ post['vin-number'] }} {{ post['brand'] }} {% endblock %}</h2>
+    <span class="badge badge-primary">VIN: {{ post['vin_number'] }} </span>
+    {% if post['condition'] == 0 %}
+        <p>Condition: serviceable</p>
+    {% else %}
+        <p>Condition: defective</p>
+    {% endif %}
+{% endblock %}

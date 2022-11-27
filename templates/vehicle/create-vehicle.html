@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} Create a New Post {% endblock %}</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="vin-number">VIN number</label>
+        <input type="text" name="vin-number"
+               placeholder="vin-number" class="form-control"
+               value="{{ request.form['vin-number'] }}"></input>
+    </div>
+    <div class="form-group">
+        <label for="brand">Brand</label>
+        <input type="text" name="brand"
+               placeholder="brand" class="form-control"
+               value="{{ request.form['brand'] }}"></input>
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input type="text" name="price"
+               placeholder="price" class="form-control"
+               value="{{ request.form['price'] }}"></input>
+    </div>
+    <legend>Condition</legend>
+    <p>Select violations if exists.</p>
+    <div>
+        <input type="radio" id="defective"
+               name="condition" value="1">
+        <label for="defective">Defective</label>
+
+        <input type="radio" id="serviceable"
+               name="condition" value="0">
+        <label for="serviceable">Serviceable</label>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
