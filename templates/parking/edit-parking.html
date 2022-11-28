@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} Edit "{{ post['parking_id'] }} {{ post['vin_number'] }}" {% endblock %}</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="vin_number">VIN</label>
+        <input type="text" name="vin_number"
+               placeholder="vin_number" class="form-control"
+               value="{{ request.form['vin_number'] or post['vin_number'] }}"></input>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+<hr>
+<form action="{{ url_for('delete_parking', parking_id=post['parking_id']) }}" method="POST">
+    <input type="submit" value="Delete Parking"
+            class="btn btn-danger btn-sm"
+            onclick="return confirm('Are you sure you want to delete this parking?')">
+</form>
+{% endblock %}

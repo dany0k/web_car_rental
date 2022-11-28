@@ -8,15 +8,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db/carrental.db" beforeDir="false" afterPath="$PROJECT_DIR$/db/carrental.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/client/create-client.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/client/create-client.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/client/edit.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/vehicle/client-list.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/vehicle/client.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/vehicle/create-vehicle.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/vehicle/create-vehicle.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/vehicle/create.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/vehicle/edit-vehicle.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/vehicle/edit-vehicle.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/vehicle/edit.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

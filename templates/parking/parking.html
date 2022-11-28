@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{% block title %} {{ post['parking_id'] }} {{ post['vin_number'] }} {% endblock %}
+        <span class="badge badge-primary">id: {{ post['parking_id'] }}</span>
+    </h2>
+    {% endblock %}

@@ -32,6 +32,24 @@ def get_vehicle(vehicle_id):
     return cur_vehicle
 
 
+def get_parking(parking_id):
+    conn = get_db_connection()
+    cur_parking = conn.execute('SELECT * FROM parking WHERE parking_id = ?',
+                               (parking_id,)).fetchone()
+    conn.close()
+    if cur_parking is None:
+        abort(404)
+    return cur_parking
+
+
+def isVinExists(vin):
+    conn = get_db_connection()
+    vins_list = conn.execute('SELECT vin_number FROM parking').fetchone()
+    for el in vins_list:
+        if str(el) == str(vin):
+            return 0
+    return 1
+
 ############
 # Clients #
 ############
@@ -182,6 +200,88 @@ def show_vehicles():
     cur_vehicle = conn.execute('SELECT * FROM vehicle').fetchall()
     conn.close()
     return render_template('./vehicle/vehiclelist.html', posts=cur_vehicle)
+
+
+###########
+# Parking #
+###########
+
+
+@app.route('/parking/<int:parking_id>')
+def parking(parking_id):
+    cur_parking = get_parking(parking_id)
+    return render_template('./parking/parking.html', post=cur_parking)
+
+
+@app.route('/create-parking', methods=('GET', 'POST'))
+def create_parking():
+    conn = get_db_connection()
+    if request.method == 'POST':
+        vin_number = request.form['vin_number']
+        conn.row_factory = lambda cursor, row: row[0]
+        c = conn.cursor()
+        vins_list = c.execute('SELECT vin_number FROM parking').fetchall()
+        for i in range(len(vins_list)):
+            if vins_list[i] != vin_number and i == len(vins_list) - 1:
+                flash('This VIN number is not exist.')
+                return render_template('./parking/create-parking.html')
+            elif vins_list[i] == vin_number:
+                break
+        if not vin_number:
+            flash('Please fill all fields')
+        else:
+            conn.execute('INSERT INTO parking (vin_number) VALUES (?)',
+                         [vin_number])
+            conn.commit()
+            conn.close()
+    return render_template('./parking/create-parking.html')
+
+
+@app.route('/parking/<int:parking_id>/edit-parking', methods=('GET', 'POST'))
+def edit_parking(parking_id):
+    cur_parking = get_parking(parking_id)
+
+    if request.method == 'POST':
+        conn = get_db_connection()
+        vin_number = request.form['vin_number']
+        conn.row_factory = lambda cursor, row: row[0]
+        c = conn.cursor()
+        vins_list = c.execute('SELECT vin_number FROM parking').fetchall()
+        for i in range(len(vins_list)):
+            if vins_list[i] != vin_number and i == len(vins_list) - 1:
+                flash('This VIN number is not exist.')
+                return render_template('./parking/edit-parking.html', post=cur_parking)
+            elif vins_list[i] == vin_number:
+                break
+        if not vin_number:
+            flash('Please fill all fields')
+        else:
+            conn.execute('UPDATE parking SET vin_number = ?'
+                         ' WHERE parking_id = ?',
+                         (vin_number, parking_id))
+            conn.commit()
+            conn.close()
+            return redirect(url_for('show_parking'))
+
+    return render_template('./parking/edit-parking.html', post=cur_parking)
+
+
+@app.route('/parking/<int:parking_id>/delete-parking', methods=('POST',))
+def delete_parking(parking_id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM parking WHERE parking_id = ?', (parking_id,))
+    conn.commit()
+    conn.close()
+    flash('Parking was successfully deleted!')
+    return redirect(url_for('show_parking'))
+
+
+@app.route('/parking-list')
+def show_parking():
+    conn = get_db_connection()
+    cur_parking = conn.execute('SELECT * FROM parking').fetchall()
+    conn.close()
+    return render_template('./parking/parking-list.html', posts=cur_parking)
 
 
 @app.route('/')
