@@ -1,7 +1,52 @@
+.hor-pane {
 h1 {
     border: 2px #eee solid;
     color: brown;
     text-align: center;
     padding: 10px;
+}
+
+body,html {
+  margin: 0;
+  font-family: sans-serif;
+}
+
+ul {
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+li {
+  display: inline;
+}
+
+a {
+  outline: none;
+  text-decoration: none;
+  display: inline-block;
+  width: 19.5%;
+  margin-right: 0.625%;
+  text-align: center;
+  line-height: 3;
+  color: black;
+}
+
+li:last-child a {
+  margin-right: 0;
+}
+
+a:link, a:visited, a:focus {
+  background: yellow;
+}
+
+a:hover {
+  background: orange;
+}
+
+a:active {
+  background: red;
+  color: white;
+}
 }
 

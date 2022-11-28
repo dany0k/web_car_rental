@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{% block title %} Rent №{{ post['rent_id'] }} {% endblock %}
+        <hr>
+        <span class="badge badge-primary">Client ID: {{ post['client_id'] }}</span>
+        <span class="badge badge-primary">VIN: {{ post['vin_number'] }}</span>
+    </h2>
+{% endblock %}

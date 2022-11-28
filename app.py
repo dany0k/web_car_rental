@@ -42,13 +42,15 @@ def get_parking(parking_id):
     return cur_parking
 
 
-def isVinExists(vin):
+def get_rent(rent_id):
     conn = get_db_connection()
-    vins_list = conn.execute('SELECT vin_number FROM parking').fetchone()
-    for el in vins_list:
-        if str(el) == str(vin):
-            return 0
-    return 1
+    cur_rent = conn.execute('SELECT * FROM rent WHERE rent_id = ?',
+                            (rent_id,)).fetchone()
+    conn.close()
+    if cur_rent is None:
+        abort(404)
+    return cur_rent
+
 
 ############
 # Clients #
@@ -199,12 +201,12 @@ def show_vehicles():
     conn = get_db_connection()
     cur_vehicle = conn.execute('SELECT * FROM vehicle').fetchall()
     conn.close()
-    return render_template('./vehicle/vehiclelist.html', posts=cur_vehicle)
+    return render_template('./vehicle/vehicle-list.html', posts=cur_vehicle)
 
 
 ###########
 # Parking #
-###########
+###########1
 
 
 @app.route('/parking/<int:parking_id>')
@@ -282,6 +284,76 @@ def show_parking():
     cur_parking = conn.execute('SELECT * FROM parking').fetchall()
     conn.close()
     return render_template('./parking/parking-list.html', posts=cur_parking)
+
+
+########
+# Rent #
+########
+
+
+@app.route('/rent/<int:rent_id>')
+def rent(rent_id):
+    cur_rent = get_rent(rent_id)
+    return render_template('./rent/rent.html', post=cur_rent)
+
+
+@app.route('/create-rent', methods=('GET', 'POST'))
+def create_rent():
+    if request.method == 'POST':
+        firstname = request.form['firstname']
+        surname = request.form['surname']
+        violation = request.form['violation']
+
+        if not firstname or not surname or not violation:
+            flash('Please fill all fields')
+        else:
+            conn = get_db_connection()
+            conn.execute('INSERT INTO client (firstname, surname, violation) VALUES (?, ?, ?)',
+                         (firstname, surname, violation))
+            conn.commit()
+            conn.close()
+    return render_template('./client/create-client.html')
+
+
+@app.route('/rent/<int:rent_id>/edit-rent', methods=('GET', 'POST'))
+def edit_rent(client_id):
+    cur_client = get_client(client_id)
+
+    if request.method == 'POST':
+        firstname = request.form['firstname']
+        surname = request.form['surname']
+        violation = request.form['violation']
+
+        if not firstname or not surname or not violation:
+            flash('Please fill all fields')
+        else:
+            conn = get_db_connection()
+            conn.execute('UPDATE client SET firstname = ?, surname = ?, violation = ?'
+                         ' WHERE client_id = ?',
+                         (firstname, surname, violation, client_id))
+            conn.commit()
+            conn.close()
+            return redirect(url_for('show_clients'))
+
+    return render_template('./client/edit-client.html', post=cur_client)
+
+
+@app.route('/rent/<int:rent_id>/delete-rent', methods=('POST',))
+def delete_rent(client_id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM client WHERE client_id = ?', (client_id,))
+    conn.commit()
+    conn.close()
+    flash('Client was successfully deleted!')
+    return redirect(url_for('show_clients'))
+
+
+@app.route('/rent-list')
+def show_rent():
+    conn = get_db_connection()
+    cur_rent = conn.execute('SELECT * FROM rent').fetchall()
+    conn.close()
+    return render_template('./rent/rent-list.html', posts=cur_rent)
 
 
 @app.route('/')
