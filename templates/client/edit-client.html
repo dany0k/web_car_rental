@@ -19,14 +19,23 @@
     <legend>Violation</legend>
     <p>Select violations if exists.</p>
     <div>
-        <input type="radio" id="available"
-               name="violation" value="1">
-        <label for="available">Available</label>
+        {% if request.form['violation'] or post['violation'] == 1 %}
+        <input type="radio" id="available1"
+               name="violation" value="1" checked>
+        <label for="available1">Available</label>
 
-        <input type="radio" id="missing"
+        <input type="radio" id="missing1"
                name="violation" value="0">
-        <label for="missing">Missing</label>
+        <label for="missing1">Missing</label>
+        {% else %}
+        <input type="radio" id="available2"
+               name="violation" value="1" checked>
+        <label for="available2">Available</label>
 
+        <input type="radio" id="missing2"
+               name="violation" value="0" checked>
+        <label for="missing2">Missing</label>
+        {% endif %}
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>
