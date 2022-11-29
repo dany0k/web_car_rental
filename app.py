@@ -1,9 +1,14 @@
 import sqlite3
-
-from flask import Flask, render_template, abort, request, flash, redirect, url_for
+from forms import *
+from flask import Flask, render_template, request, abort, flash, redirect, url_for
+from flask_wtf import FlaskForm
+from flask_wtf.csrf import CSRFProtect
+from wtforms import StringField, SubmitField, RadioField
+from wtforms.validators import DataRequired, Length, ValidationError
 
 app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = 'secret_key'
+csrf = CSRFProtect(app)
 
 
 def get_db_connection():
@@ -60,15 +65,17 @@ def get_rent(rent_id):
 @app.route('/<int:client_id>')
 def client(client_id):
     cur_client = get_client(client_id)
-    return render_template('./client/client.html', post=cur_client)
+    form = ClientForm()
+    return render_template('./client/client.html', post=cur_client, form=form)
 
 
 @app.route('/create-client', methods=('GET', 'POST'))
 def create_client():
-    if request.method == 'POST':
-        firstname = request.form['firstname']
-        surname = request.form['surname']
-        violation = request.form['violation']
+    form = CreateClientForm()
+    if form.validate_on_submit():
+        firstname = form.firstname.data
+        surname = form.secondname.data
+        violation = form.violation.data
 
         if not firstname or not surname or not violation:
             flash('Please fill all fields')
@@ -78,40 +85,41 @@ def create_client():
                          (firstname, surname, violation))
             conn.commit()
             conn.close()
-    return render_template('./client/create-client.html')
+            return redirect(url_for('show_clients'))
+    return render_template('./client/create-client.html', form=form)
 
 
 @app.route('/<int:client_id>/edit-client', methods=('GET', 'POST'))
 def edit_client(client_id):
     cur_client = get_client(client_id)
-
+    form = EditAndDeleteClientForm()
+    form.firstname.render_kw = {"placeholder": cur_client[1]}
+    form.secondname.render_kw = {"placeholder": cur_client[2]}
     if request.method == 'POST':
-        firstname = request.form['firstname']
-        surname = request.form['surname']
-        violation = request.form['violation']
-
-        if not firstname or not surname or not violation:
-            flash('Please fill all fields')
-        else:
+        if form.validate_on_submit:
+            firstname = form.firstname.data
+            surname = form.secondname.data
+            violation = form.violation.data
             conn = get_db_connection()
-            conn.execute('UPDATE client SET firstname = ?, surname = ?, violation = ?'
-                         ' WHERE client_id = ?',
-                         (firstname, surname, violation, client_id))
-            conn.commit()
-            conn.close()
-            return redirect(url_for('show_clients'))
+            if form.delete.data:
+                conn.execute(
+                     'DELETE FROM client WHERE client_id = ?', (client_id,))
+                conn.commit()
+                conn.close()
+                flash('Client was successfully deleted!')
+                return redirect(url_for('show_clients'))
+            
+            if not firstname or not surname or not violation:
+                flash('Please fill all fields')
+            else:
+                conn.execute('UPDATE client SET firstname = ?, surname = ?, violation = ?'
+                            ' WHERE client_id = ?',
+                            (firstname, surname, violation, client_id))
+                conn.commit()
+                conn.close()
+                return redirect(url_for('show_clients'))
+    return render_template('./client/edit-client.html', post=cur_client, form=form)
 
-    return render_template('./client/edit-client.html', post=cur_client)
-
-
-@app.route('/<int:client_id>/delete-client', methods=('POST',))
-def delete_client(client_id):
-    conn = get_db_connection()
-    conn.execute('DELETE FROM client WHERE client_id = ?', (client_id,))
-    conn.commit()
-    conn.close()
-    flash('Client was successfully deleted!')
-    return redirect(url_for('show_clients'))
 
 
 @app.route('/client-list')

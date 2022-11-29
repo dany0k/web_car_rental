@@ -1,50 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{% block title %} Edit "{{ post['firstname'] }} {{ post['surname'] }}" {% endblock %}</h1>
-
-<form method="post">
-    <div class="form-group">
-        <label for="firstname">First Name</label>
-        <input type="text" name="firstname"
-               placeholder="first name" class="form-control"
-               value="{{ request.form['firstname'] or post['firstname'] }}"></input>
-    </div>
-    <div class="form-group">
-        <label for="surname">Surname</label>
-        <input type="text" name="surname"
-               placeholder="surname" class="form-control"
-               value="{{ request.form['surname'] or post['surname'] }}"></input>
-    </div>
-    <legend>Violation</legend>
-    <p>Select violations if exists.</p>
-    <div>
-        {% if request.form['violation'] or post['violation'] == 1 %}
-        <input type="radio" id="available1"
-               name="violation" value="1" checked>
-        <label for="available1">Available</label>
-
-        <input type="radio" id="missing1"
-               name="violation" value="0">
-        <label for="missing1">Missing</label>
-        {% else %}
-        <input type="radio" id="available2"
-               name="violation" value="1" checked>
-        <label for="available2">Available</label>
-
-        <input type="radio" id="missing2"
-               name="violation" value="0" checked>
-        <label for="missing2">Missing</label>
-        {% endif %}
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-    </div>
-</form>
+<h1>{% block title %} Edit {{ post['firstname'] }} {{ post['surname'] }} {% endblock %}</h1>
+<div class="continer">
+       <form class='form-horizontal' method='POST' action="">
+           {{ form.csrf_token() }}
+           <div class="form-group">
+               {{ form.firstname.label }}
+               {{ form.firstname(class="form-control") }}
+           </div>
+           <div class="form-group">
+               {{ form.secondname.label }}
+               {{ form.secondname(class="form-control") }}
+           </div>
+           <div class="form-group">
+               {% for subfield in form.violation %}
+               <tr>
+                   <td>{{ subfield }} </td>
+                   <td>{{ subfield.label }}</td>
+               </tr>
+               {% endfor %}
+           </div>
+           <div class="form-group">
+               {{ form.submit(class="btn btn-primary") }}
+               <a class="btn btn-primary" href="../client-list">Cancel</a>
+           </div>
+           
+       </form>
+   </div>
 <hr>
-<form action="{{ url_for('delete_client', client_id=post['client_id']) }}" method="POST">
-    <input type="submit" value="Delete Post"
-            class="btn btn-danger btn-sm"
-            onclick="return confirm('Are you sure you want to delete this post?')">
+<form method="POST">
+    {{ form.csrf_token() }}
+    {{ form.delete(class="btn btn-danger btn-medium") }}
 </form>
 {% endblock %}
