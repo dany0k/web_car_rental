@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{% block title %} Create new client {% endblock %}</h1>
+<h1>{% block title %} Create a new client {% endblock %}</h1>
 
 <div class="continer">
     <form class='form-horizontal' method='POST' action="">
@@ -11,8 +11,8 @@
             {{ form.firstname(class="form-control") }}
         </div>
         <div class="form-group">
-            {{ form.secondname.label }}
-            {{ form.secondname(class="form-control") }}
+            {{ form.surname.label }}
+            {{ form.surname(class="form-control") }}
         </div>
         <div class="form-group">
             {% for subfield in form.violation %}

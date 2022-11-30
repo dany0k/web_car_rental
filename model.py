@@ -11,10 +11,10 @@ class Client(db.Model):
 
 class Vehicle(db.Model):
     __tablename__ = 'vehicle'
-    vin_number = db.Column('vin_number', db.String(50), primary_key=True, nullable=False, unique=True)
-    brand = db.Column('brand', db.String(50), nullable=False, unique=False) 
-    price = db.Column('price', db.INTEGER, nullable=False) 
-    condition = db.Column('condition', db.INTEGER, nullable=False)
+    vin_number = db.Column('vin_number', db.INTEGER, primary_key=True)
+    brand = db.Column('brand', db.TEXT) 
+    price = db.Column('price', db.INTEGER) 
+    condition = db.Column('condition', db.INTEGER)
 
 
 class Parking(db.Model):

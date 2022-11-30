@@ -16,23 +16,13 @@ def get_db_connection():
 
 
 def get_client(client_id):
-    conn = get_db_connection()
-    cur_client = conn.execute('SELECT * FROM client WHERE client_id=?',
-                              (client_id,)).fetchone()
-    conn.close()
-    if cur_client is None:
-        abort(404)
-    return cur_client
+    return db.session.query(Client)\
+        .filter(Client.client_id == int(client_id)).one_or_none()
 
 
-def get_vehicle(vehicle_id):
-    conn = get_db_connection()
-    cur_vehicle = conn.execute('SELECT * FROM vehicle WHERE vin_number=?',
-                               (vehicle_id,)).fetchone()
-    conn.close()
-    if cur_vehicle is None:
-        abort(404)
-    return cur_vehicle
+def get_vehicle(vin_number):
+    return db.session.query(Vehicle)\
+        .filter(Vehicle.vin_number == vin_number).one_or_none()
 
 
 def get_parking(parking_id):
@@ -62,8 +52,7 @@ def get_rent(rent_id):
 
 @app.route('/<int:client_id>')
 def client(client_id):
-    cur_client = db.session.query(Client)\
-        .filter(Client.client_id == int(client_id)).one_or_none()
+    cur_client = get_client(client_id)
     if cur_client is None:
         return 'Not found', 404
     return render_template(
@@ -77,17 +66,16 @@ def create_client():
     form = CreateClientForm()
     if form.validate_on_submit():
         firstname = form.firstname.data
-        surname = form.secondname.data
+        surname = form.surname.data
         violation = form.violation.data
 
         if not firstname or not surname or not violation:
             flash('Please fill all fields')
         else:
-            conn = get_db_connection()
-            conn.execute('INSERT INTO client (firstname, surname, violation) VALUES (?, ?, ?)',
-                         (firstname, surname, violation))
-            conn.commit()
-            conn.close()
+            new_client = Client()
+            form.populate_obj(new_client)
+            db.session.add(new_client)
+            db.session.commit()
             return redirect(url_for('show_clients'))
     return render_template('./client/create-client.html', form=form)
 
@@ -96,41 +84,38 @@ def create_client():
 def edit_client(client_id):
     cur_client = get_client(client_id)
     form = EditAndDeleteClientForm()
-    form.firstname.render_kw = {"placeholder": cur_client[1]}
-    form.secondname.render_kw = {"placeholder": cur_client[2]}
-    if request.method == 'POST':
+    if request.method == 'GET':
+        form.firstname.data = cur_client.firstname
+        form.surname.data = cur_client.surname
+        if cur_client.violation == 1:
+            form.violation.default = '1'
+    if request.method == 'POST' and form.validate():
         if form.validate_on_submit:
             firstname = form.firstname.data
-            surname = form.secondname.data
+            surname = form.surname.data
             violation = form.violation.data
-            conn = get_db_connection()
+            form.populate_obj(cur_client)
             if form.delete.data:
-                conn.execute(
-                     'DELETE FROM client WHERE client_id = ?', (client_id,))
-                conn.commit()
-                conn.close()
+                db.session.delete(cur_client)
+                db.session.commit()
                 flash('Client was successfully deleted!')
-                return redirect(url_for('show_clients'))
+                return redirect(url_for('show_clients', client_id=client_id))
             
             if not firstname or not surname or not violation:
                 flash('Please fill all fields')
             else:
-                conn.execute('UPDATE client SET firstname = ?, surname = ?, violation = ?'
-                            ' WHERE client_id = ?',
-                            (firstname, surname, violation, client_id))
-                conn.commit()
-                conn.close()
+                form.populate_obj(cur_client)
+                db.session.add(cur_client)       
+                db.session.commit()
                 return redirect(url_for('show_clients'))
-    return render_template('./client/edit-client.html', post=cur_client, form=form)
+    return render_template('./client/edit-client.html', client=cur_client, form=form)
 
 
 
 @app.route('/client-list')
 def show_clients():
-    conn = get_db_connection()
-    cur_client = conn.execute('SELECT * FROM client').fetchall()
-    conn.close()
-    return render_template('./client/client-list.html', posts=cur_client)
+    clients = db.session.query(Client).all()
+    return render_template('./client/client-list.html', clients=clients)
 
 
 ###########
@@ -141,7 +126,11 @@ def show_clients():
 @app.route('/<string:vin_number>')
 def vehicle(vin_number):
     cur_vehicle = get_vehicle(vin_number)
-    return render_template('./vehicle/vehicle.html', post=cur_vehicle)
+    if cur_vehicle is None:
+        return 'Not found', 404
+    return render_template(
+        './vehicle/vehicle.html',
+         vehicle=cur_vehicle)
 
 
 @app.route('/create-vehicle', methods=('GET', 'POST'))

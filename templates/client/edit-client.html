@@ -1,36 +1,40 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{% block title %} Edit {{ post['firstname'] }} {{ post['surname'] }} {% endblock %}</h1>
+<h1>{% block title %} Edit {{ client.firstname }} {{ client.surname }} {% endblock %}</h1>
 <div class="continer">
-       <form class='form-horizontal' method='POST' action="">
-           {{ form.csrf_token() }}
-           <div class="form-group">
-               {{ form.firstname.label }}
-               {{ form.firstname(class="form-control") }}
-           </div>
-           <div class="form-group">
-               {{ form.secondname.label }}
-               {{ form.secondname(class="form-control") }}
-           </div>
-           <div class="form-group">
-               {% for subfield in form.violation %}
-               <tr>
-                   <td>{{ subfield }} </td>
-                   <td>{{ subfield.label }}</td>
-               </tr>
-               {% endfor %}
-           </div>
-           <div class="form-group">
-               {{ form.submit(class="btn btn-primary") }}
-               <a class="btn btn-primary" href="../client-list">Cancel</a>
-           </div>
-           
-       </form>
-   </div>
+    <form class='form-horizontal' method='POST' action="">
+        {{ form.csrf_token() }}
+        <div class="form-group">
+            {{ form.firstname.label }}
+            {{ form.firstname(class="form-control") }}
+            {{ form.firstname.errors if form.firstname.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.surname.label }}
+            {{ form.surname(class="form-control") }}
+            {{ form.surnname.errors if form.surname.errors }}
+        </div>
+        <div class="form-group">
+            {% for subfield in form.violation %}
+            <tr>
+                <td>{{ subfield }} </td>
+                <td>{{ subfield.label }}</td>
+            </tr>
+            {% endfor %}
+            <td colspan="3">
+                {% if client.client_id %}
+                {{ form.delete(class="btn btn-danger btn-medium") }}
+                {% endif %}
+            </td>
+
+
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+            <a class="btn btn-primary" href="../client-list">Cancel</a>
+        </div>
+    </form>
+</div>
 <hr>
-<form method="POST">
-    {{ form.csrf_token() }}
-    {{ form.delete(class="btn btn-danger btn-medium") }}
-</form>
 {% endblock %}

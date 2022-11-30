@@ -9,9 +9,18 @@
 <body>
     {% extends 'base.html' %}
     {% block content %}
-        <h2>{% block titlle %}</h2>
-        <h2> {{ client.firstname }} </h2>
+        <h1>{% block titlle %}</h1>
+        <h1>Editing {{ client.firstname }} {{ client.surname }}</h1>
         {% endblock %}
+        <h2>Client Name: {{ client.firstname }} </h2>
+        <h2>Client Name: {{ client.surname }}</h2>
+        <h3>Client ID: {{ client.client_id }}</h3>
+        {% if client.violation == 0 %}
+        <h3>Violation: false </h3>
+        {% else %}
+        <h3>Violation: true </h3>
+        {% endif %}
+        <a href="client-list.html">Back to client list</a>
     {% endblock %}
 </body>
 </html>
