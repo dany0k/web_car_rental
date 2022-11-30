@@ -64,7 +64,7 @@ def client(client_id):
 @app.route('/create-client', methods=('GET', 'POST'))
 def create_client():
     form = CreateClientForm()
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         firstname = form.firstname.data
         surname = form.surname.data
         violation = form.violation.data
@@ -77,7 +77,10 @@ def create_client():
             db.session.add(new_client)
             db.session.commit()
             return redirect(url_for('show_clients'))
-    return render_template('./client/create-client.html', form=form)
+    return render_template(
+        './client/create-client.html',
+        form=form
+        )
 
 
 @app.route('/<int:client_id>/edit-client', methods=('GET', 'POST'))
@@ -89,33 +92,33 @@ def edit_client(client_id):
         form.surname.data = cur_client.surname
         if cur_client.violation == 1:
             form.violation.default = '1'
-    if request.method == 'POST' and form.validate():
-        if form.validate_on_submit:
-            firstname = form.firstname.data
-            surname = form.surname.data
-            violation = form.violation.data
+    if request.method == 'POST' and form.validate_on_submit():
+        firstname = form.firstname.data
+        surname = form.surname.data
+        violation = form.violation.data
+        form.populate_obj(cur_client)
+        if form.delete.data:
+            db.session.delete(cur_client)
+            db.session.commit()
+            flash('Client was successfully deleted!')
+            return redirect(url_for('show_clients', client_id=client_id))
+        
+        if not firstname or not surname or not violation:
+            flash('Please fill all fields')
+        else:
             form.populate_obj(cur_client)
-            if form.delete.data:
-                db.session.delete(cur_client)
-                db.session.commit()
-                flash('Client was successfully deleted!')
-                return redirect(url_for('show_clients', client_id=client_id))
-            
-            if not firstname or not surname or not violation:
-                flash('Please fill all fields')
-            else:
-                form.populate_obj(cur_client)
-                db.session.add(cur_client)       
-                db.session.commit()
-                return redirect(url_for('show_clients'))
+            db.session.add(cur_client)       
+            db.session.commit()
+            return redirect(url_for('show_clients'))
     return render_template('./client/edit-client.html', client=cur_client, form=form)
 
 
 
 @app.route('/client-list')
 def show_clients():
-    clients = db.session.query(Client).all()
-    return render_template('./client/client-list.html', clients=clients)
+    return render_template(
+        './client/client-list.html'
+        , clients=db.session.query(Client).all())
 
 
 ###########
@@ -135,55 +138,60 @@ def vehicle(vin_number):
 
 @app.route('/create-vehicle', methods=('GET', 'POST'))
 def create_vehicle():
-    if request.method == 'POST':
-        vin_number = request.form['vin-number']
-        brand = request.form['brand']
-        price = request.form['price']
-        condition = request.form['condition']
-
-        vin_number_default_len = 18
-        if len(vin_number) < vin_number_default_len:
-            flash('Incorrect vin number')
-            return render_template('./vehicle/create-vehicle.html')
-        try:
-            int(price)
-        except:
-            flash('Incorrect price')
-            return render_template('./vehicle/create-vehicle.html')
+    form = CreateVehicleForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        vin_number = form.vin_number
+        brand = form.brand
+        price = form.price
+        condition = form.condition
 
         if not vin_number or not brand or not price or not condition:
             flash('Please fill all fields')
         else:
-            conn = get_db_connection()
-            conn.execute('INSERT INTO vehicle (vin_number, brand, price, condition) VALUES (?, ?, ?, ?)',
-                         (vin_number, brand, price, condition))
-            conn.commit()
-            conn.close()
-    return render_template('./vehicle/create-vehicle.html')
+            new_vehicle = Vehicle()
+            form.populate_obj(new_vehicle)
+            db.session.add(new_vehicle)
+            db.session.commit()
+            return redirect(url_for('show_vehicles'))
+    return render_template(
+        './vehicle/create-vehicle.html',
+        form=form
+    )
 
 
 @app.route('/<string:vin_number>/edit-vehicle', methods=('GET', 'POST'))
 def edit_vehicle(vin_number):
     cur_vehicle = get_vehicle(vin_number)
-
-    if request.method == 'POST':
-        vin_num = request.form['vin-number']
-        brand = request.form['brand']
-        price = request.form['price']
-        condition = request.form['condition']
-
-        if not vin_num or not brand or not price or not condition:
+    form = EditAndDeleteVehicleForm()
+    if request.method == 'GET':
+        form.vin_number.data = cur_vehicle.vin_number
+        form.brand.data = cur_vehicle.brand
+        form.price.data = cur_vehicle.price
+        if cur_vehicle.condition == 1:
+            form.condition.default = '1'
+    if request.method == 'POST' and form.validate_on_submit():
+        vin_number = form.vin_number.data
+        brand = form.brand.data
+        price = form.price.data
+        condition = form.condition.data
+        form.populate_obj(cur_vehicle)
+        if form.delete.data:
+            db.session.delete(cur_vehicle)
+            db.session.commit()
+            flash('Vehicle was successfully deleted!')
+            return redirect(url_for('show_vehicles', vin_number=vin_number))
+        
+        if not vin_number or not brand or not price:
             flash('Please fill all fields')
         else:
-            conn = get_db_connection()
-            conn.execute('UPDATE vehicle SET vin_number = ?, brand = ?, price = ?, condition = ?'
-                         ' WHERE vin_number = ?',
-                         (vin_num, brand, price, condition, vin_num))
-            conn.commit()
-            conn.close()
+            form.populate_obj(cur_vehicle)
+            db.session.add(cur_vehicle)       
+            db.session.commit()
             return redirect(url_for('show_vehicles'))
-
-    return render_template('./vehicle/edit-vehicle.html', post=cur_vehicle)
+    return render_template(
+        './vehicle/edit-vehicle.html',
+        vehicle=cur_vehicle,
+        form=form)
 
 
 @app.route('/<string:vin_number>/delete-vehicle', methods=('POST',))
@@ -198,10 +206,10 @@ def delete_vehicle(vin_number):
 
 @app.route('/vehicle-list')
 def show_vehicles():
-    conn = get_db_connection()
-    cur_vehicle = conn.execute('SELECT * FROM vehicle').fetchall()
-    conn.close()
-    return render_template('./vehicle/vehicle-list.html', posts=cur_vehicle)
+    
+    return render_template(
+        './vehicle/vehicle-list.html'
+        , vehicles=db.session.query(Vehicle).all())
 
 
 ###########

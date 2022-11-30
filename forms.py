@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm, Form
-from wtforms import StringField, SubmitField, RadioField
-from wtforms.validators import DataRequired, Length
+from wtforms import StringField, SubmitField, RadioField, IntegerField
+from wtforms.validators import DataRequired, Length, NumberRange
 
 
-class ClientForm(Form):
+class ClientForm(FlaskForm):
     firstname = StringField(label='Fistname', validators=[
         DataRequired(message="This field must pe filled"),
         Length(min=3, max=50, message="Min length 3, Max length 50")
@@ -18,12 +18,13 @@ class CreateClientForm(FlaskForm):
     submit = SubmitField(label=('Submit'))
 
     firstname = StringField(label=('Firstname'),
-    validators=[DataRequired(), Length(max=20)]
-    )
+                            validators=[DataRequired(), Length(max=20)]
+                            )
     surname = StringField(label=('Surname'),
-    validators=[DataRequired(), Length(max=20)]
-    )
-    violation=RadioField(label=('Violation'), choices=[('0', 'Missing'), ('1', 'Available')], default='0')
+                          validators=[DataRequired(), Length(max=20)]
+                          )
+    violation = RadioField(label=('Violation'), choices=[(
+        '0', 'Missing'), ('1', 'Available')], default='0')
 
 
 class EditAndDeleteClientForm(FlaskForm):
@@ -31,40 +32,60 @@ class EditAndDeleteClientForm(FlaskForm):
     delete = SubmitField(label=('Delete'))
 
     firstname = StringField(label=('Firstname'),
-    validators=[DataRequired(), Length(max=20)]
-    )
+                            validators=[DataRequired(), Length(max=20)])
     surname = StringField(label=('Surname'),
-    validators=[DataRequired(), Length(max=20)]
-    )
-    violation=RadioField(label=('Violation'), choices=[('0', 'Missing'), ('1', 'Available')], default='0')
+                          validators=[DataRequired(), Length(max=20)])
+    violation = RadioField(
+        label=('Violation'),
+        choices=[('0', 'Missing'), ('1', 'Available')],
+        default='0')
 
 
 class VehicleForm(FlaskForm):
-    firstname = StringField(label='Fistname')
-    firstname = StringField(label='Surname')
-    firstname = StringField(label='Violation')
+    vin_number = StringField(label='VIN',
+                             validators=[DataRequired(), Length(min=18, max=18)])
+    brand = StringField(label='Brand')
+    price = StringField(label='Price',
+                         validators=[DataRequired(),
+                         Length(max=5)]
+                         )
+    condition = RadioField(
+        label=('Condition'),
+        choices=[('0', 'Available'), ('1', 'Missing')],
+        default='0')
 
 
 class CreateVehicleForm(FlaskForm):
     submit = SubmitField(label=('Submit'))
 
-    firstname = StringField(label=('Firstname'),
-    validators=[DataRequired(), Length(max=20)]
-    )
-    surname = StringField(label=('Surname'),
-    validators=[DataRequired(), Length(max=20)]
-    )
-    violation=RadioField(label=('Violation'), choices=[('0', 'Missing'), ('1', 'Available')], default='0')
+    vin_number = StringField(label='VIN',
+                             validators=[DataRequired(), Length(min=18, max=18)])
+    brand = StringField(label='Brand')
+    price = StringField(label='Price',
+                         validators=[DataRequired(),
+                         Length(max=5)]
+                         )
+    condition = RadioField(
+        label=('Condition'),
+        choices=[('0', 'Available'), ('1', 'Missing')],
+        default='0')
+
 
 
 class EditAndDeleteVehicleForm(FlaskForm):
     submit = SubmitField(label=('Submit'))
     delete = SubmitField(label=('Delete'))
 
-    firstname = StringField(label=('Firstname'), render_kw={"placeholder": "test"},
-    validators=[DataRequired(), Length(max=20)]
-    )
-    surname = StringField(label=('Surname'),
-    validators=[DataRequired(), Length(max=20)]
-    )
-    violation=RadioField(label=('Violation'), choices=[('0', 'Missing'), ('1', 'Available')], default='0')
+    submit = SubmitField(label=('Submit'))
+
+    vin_number = StringField(label='VIN',
+                             validators=[DataRequired(), Length(min=18, max=18)])
+    brand = StringField(label='Brand')
+    price = StringField(label='Price',
+                         validators=[DataRequired(),
+                         Length(max=5)]
+                         )
+    condition = RadioField(
+        label=('Condition'),
+        choices=[('0', 'Available'), ('1', 'Missing')],
+        default='0')

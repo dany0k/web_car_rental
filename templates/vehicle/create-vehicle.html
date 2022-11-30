@@ -1,41 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{% block title %} Create a New Post {% endblock %}</h1>
+<h1>{% block title %} Create a new client {% endblock %}</h1>
 
-<form method="post">
-    <div class="form-group">
-        <label for="vin-number">VIN number</label>
-        <input type="text" name="vin-number"
-               placeholder="vin-number" class="form-control"
-               value="{{ request.form['vin-number'] }}"></input>
-    </div>
-    <div class="form-group">
-        <label for="brand">Brand</label>
-        <input type="text" name="brand"
-               placeholder="brand" class="form-control"
-               value="{{ request.form['brand'] }}"></input>
-    </div>
-    <div class="form-group">
-        <label for="price">Price</label>
-        <input type="text" name="price"
-               placeholder="price" class="form-control"
-               value="{{ request.form['price'] }}"></input>
-    </div>
-    <legend>Condition</legend>
-    <p>Select violations if exists.</p>
-    <div>
-        <input type="radio" id="serviceable"
-               name="condition" value="0" checked>
-        <label for="serviceable">Serviceable</label>
-
-        <input type="radio" id="defective"
-               name="condition" value="1">
-        <label for="defective">Defective</label>
-
+<div class="continer">
+    <form class='form-horizontal' method='POST' action="">
+        {{ form.csrf_token() }}
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Submit</button>
+            {{ form.vin_number.label }}
+            {{ form.vin_number(class="form-control") }}
         </div>
-    </div>
-</form>
+        <div class="form-group">
+            {{ form.brand.label }}
+            {{ form.brand(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.price.label }}
+            {{ form.price(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {% for subfield in form.condition %}
+            <tr>
+                <td>{{ subfield }} </td>
+                <td>{{ subfield.label }}</td>
+            </tr>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary")}}
+        </div>
+    </form>
+</div>
 {% endblock %}
