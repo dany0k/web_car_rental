@@ -1,14 +1,12 @@
 import sqlite3
-from forms import *
-from flask import Flask, render_template, request, abort, flash, redirect, url_for
-from flask_wtf import FlaskForm
-from flask_wtf.csrf import CSRFProtect
-from wtforms import StringField, SubmitField, RadioField
-from wtforms.validators import DataRequired, Length, ValidationError
 
-app = Flask(__name__, template_folder='templates')
-app.config['SECRET_KEY'] = 'secret_key'
-csrf = CSRFProtect(app)
+from app_config import app, db
+from model import *
+from forms import *
+from flask import render_template, request, abort, flash, redirect, url_for
+
+from sqlalchemy import create_engine, select
+from sqlmodel import Session
 
 
 def get_db_connection():
@@ -64,9 +62,14 @@ def get_rent(rent_id):
 
 @app.route('/<int:client_id>')
 def client(client_id):
-    cur_client = get_client(client_id)
-    form = ClientForm()
-    return render_template('./client/client.html', post=cur_client, form=form)
+    cur_client = db.session.query(Client)\
+        .filter(Client.client_id == int(client_id)).one_or_none()
+    if cur_client is None:
+        return 'Not found', 404
+    return render_template(
+        './client/client.html', 
+        client=cur_client,
+    )
 
 
 @app.route('/create-client', methods=('GET', 'POST'))
