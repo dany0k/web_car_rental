@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm, Form
-from wtforms import StringField, SubmitField, RadioField, IntegerField
+from wtforms import StringField, SubmitField, RadioField, IntegerField, DateTimeField
 from wtforms.validators import DataRequired, Length, NumberRange
 
 
@@ -111,3 +111,45 @@ class EditAndDeleteParkingForm(FlaskForm):
 
     vin_number = StringField(label='VIN',
                              validators=[DataRequired(), Length(min=18, max=18)])
+
+class RentForm(FlaskForm):
+    client_id = StringField(label='ClientID', validators=[
+        DataRequired(message="This field must be filled"),
+        Length(min=1, max=50, message="Min length 1, Max length 50")
+    ])
+    vin_number = StringField(label='VIN',
+                             validators=[DataRequired(), Length(min=18, max=18)])
+    begin_date = StringField(label='Begin Date',
+    validators=[DataRequired()]) 
+    end_date = StringField(label='End Date', 
+    validators=[DataRequired()]) 
+
+class CreateRentForm(FlaskForm):
+    submit = SubmitField(label=('Submit'))
+
+    client_id = StringField(label='ClientID', validators=[
+        DataRequired(message="This field must be filled"),
+        Length(min=1, max=50, message="Min length 1, Max length 50")
+    ])
+    vin_number = StringField(label='VIN',
+                             validators=[DataRequired(), Length(min=18, max=18)])
+    begin_date = StringField(label='Begin Date',
+    validators=[DataRequired()]) 
+    end_date = StringField(label='End Date', 
+    validators=[DataRequired()])
+
+
+class EditAndDeleteRentForm(FlaskForm):
+    submit = SubmitField(label=('Submit'))
+    delete = SubmitField(label=('Delete'))
+
+    client_id = StringField(label='ClientID', validators=[
+        DataRequired(message="This field must be filled"),
+        Length(min=1, max=50, message="Min length 1, Max length 50")
+    ])
+    vin_number = StringField(label='VIN',
+                             validators=[DataRequired(), Length(min=18, max=18)])
+    begin_date = StringField(label='Begin Date',
+    validators=[DataRequired()]) 
+    end_date = StringField(label='End Date', 
+    validators=[DataRequired()])

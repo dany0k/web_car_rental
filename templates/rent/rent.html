@@ -1,9 +1,23 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    <h2>{% block title %} Rent №{{ post['rent_id'] }} {% endblock %}
-        <hr>
-        <span class="badge badge-primary">Client ID: {{ post['client_id'] }}</span>
-        <span class="badge badge-primary">VIN: {{ post['vin_number'] }}</span>
-    </h2>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block tittle%} {% endblock %}</title>
+</head>
+<body>
+    {% extends 'base.html' %}
+    {% block content %}
+        <h1>{% block titlle %}</h1>
+        <h1>Editing Rent№{{ rent.rent_id }} </h1>
+        {% endblock %}
+        <h2>Rent ID: {{ rent.rent_id }} </h2>
+        <h2>Client ID: {{ rent.client_id }} </h2>
+        <h2>VIN: {{ rent.vin_number }}</h2>
+        <h3>BeginDate: {{ rent.begin_date }}</h3>
+        <h3>EndDate: {{ rent.end_date }}</h3>
+        <a class="badge badge-primary" style="font-size: large;" href="rent-list">Back to client list</a>
+    {% endblock %}
+</body>
+</html>

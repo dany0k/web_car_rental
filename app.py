@@ -28,13 +28,8 @@ def get_parking(parking_id):
 
 
 def get_rent(rent_id):
-    conn = get_db_connection()
-    cur_rent = conn.execute('SELECT * FROM rent WHERE rent_id = ?',
-                            (rent_id,)).fetchone()
-    conn.close()
-    if cur_rent is None:
-        abort(404)
-    return cur_rent
+    return db.session.query(Rent)\
+        .filter(Rent.rent_id == rent_id).one_or_none()
 
 
 ############
@@ -282,66 +277,78 @@ def show_parking():
 @app.route('/rent/<int:rent_id>')
 def rent(rent_id):
     cur_rent = get_rent(rent_id)
-    return render_template('./rent/rent.html', post=cur_rent)
+    if cur_rent is None:
+        return 'Not found', 404
+    return render_template(
+        './rent/rent.html',
+         rent=cur_rent)
 
 
 @app.route('/create-rent', methods=('GET', 'POST'))
 def create_rent():
-    if request.method == 'POST':
-        firstname = request.form['firstname']
-        surname = request.form['surname']
-        violation = request.form['violation']
+    form = CreateRentForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        client_id = form.client_id
+        vin_number = form.vin_number
+        begin_date = form.begin_date
+        end_date = form.end_date
 
-        if not firstname or not surname or not violation:
+        if not vin_number or not client_id\
+             or not begin_date or not end_date:
             flash('Please fill all fields')
         else:
-            conn = get_db_connection()
-            conn.execute('INSERT INTO client (firstname, surname, violation) VALUES (?, ?, ?)',
-                         (firstname, surname, violation))
-            conn.commit()
-            conn.close()
-    return render_template('./client/create-client.html')
+            new_rent = Rent()
+            form.populate_obj(new_rent)
+            db.session.add(new_rent)
+            db.session.commit()
+            return redirect(url_for('show_rent'))
+    return render_template(
+        './rent/create-rent.html',
+        form=form
+    )
 
 
 @app.route('/rent/<int:rent_id>/edit-rent', methods=('GET', 'POST'))
-def edit_rent(client_id):
-    cur_client = get_client(client_id)
-
-    if request.method == 'POST':
-        firstname = request.form['firstname']
-        surname = request.form['surname']
-        violation = request.form['violation']
-
-        if not firstname or not surname or not violation:
+def edit_rent(rent_id):
+    cur_rent = get_rent(rent_id)
+    form = EditAndDeleteRentForm()
+    if request.method == 'GET':
+        form.client_id.data = cur_rent.client_id
+        form.vin_number.data = cur_rent.vin_number
+        form.begin_date.data = cur_rent.begin_date
+        form.end_date.data = cur_rent.end_date
+    if request.method == 'POST' and form.validate_on_submit():
+        client_id = form.client_id.data
+        vin_number = form.vin_number.data
+        begin_date = form.begin_date.data
+        end_date = form.end_date.date
+        form.populate_obj(cur_rent)
+        if form.delete.data:
+            db.session.delete(cur_rent)
+            db.session.commit()
+            flash('Rent was successfully deleted!')
+            return redirect(url_for('show_rent',
+             rent_id=rent_id))
+        
+        if not vin_number or not client_id or not begin_date\
+            or not end_date:
             flash('Please fill all fields')
         else:
-            conn = get_db_connection()
-            conn.execute('UPDATE client SET firstname = ?, surname = ?, violation = ?'
-                         ' WHERE client_id = ?',
-                         (firstname, surname, violation, client_id))
-            conn.commit()
-            conn.close()
-            return redirect(url_for('show_clients'))
-
-    return render_template('./client/edit-client.html', post=cur_client)
-
-
-@app.route('/rent/<int:rent_id>/delete-rent', methods=('POST',))
-def delete_rent(client_id):
-    conn = get_db_connection()
-    conn.execute('DELETE FROM client WHERE client_id = ?', (client_id,))
-    conn.commit()
-    conn.close()
-    flash('Client was successfully deleted!')
-    return redirect(url_for('show_clients'))
+            form.populate_obj(cur_rent)
+            db.session.add(cur_rent)       
+            db.session.commit()
+            return redirect(url_for('show_rent'))
+    return render_template(
+        './rent/edit-rent.html',
+        rent=cur_rent,
+        form=form)
 
 
 @app.route('/rent-list')
 def show_rent():
-    conn = get_db_connection()
-    cur_rent = conn.execute('SELECT * FROM rent').fetchall()
-    conn.close()
-    return render_template('./rent/rent-list.html', posts=cur_rent)
+    return render_template(
+        './rent/rent-list.html'
+        , rents=db.session.query(Rent).all())
 
 
 @app.route('/')

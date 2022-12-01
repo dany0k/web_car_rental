@@ -1,35 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{% block title %} Create new client {% endblock %}</h1>
+<h1>{% block title %} Create a new rent {% endblock %}</h1>
 
-<form method="post">
-    <div class="form-group">
-        <label for="firstname">First Name</label>
-        <input type="text" name="firstname"
-               placeholder="first name" class="form-control"
-               value="{{ request.form['firstname'] }}"></input>
-    </div>
-    <div class="form-group">
-        <label for="surname">Surname</label>
-        <input type="text" name="surname"
-               placeholder="surname" class="form-control"
-               value="{{ request.form['surname'] }}"></input>
-    </div>
-    <legend>Violation</legend>
-    <p>Select violations if exists.</p>
-    <div>
-        <input type="radio" id="available"
-               name="violation" value="1" checked>
-        <label for="available">Available</label>
-
-        <input type="radio" id="missing"
-               name="violation" value="0">
-        <label for="missing">Missing</label>
-
+<div class="continer">
+    <form class='form-horizontal' method='POST' action="">
+        {{ form.csrf_token() }}
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Submit</button>
+            {{ form.client_id.label }}
+            {{ form.client_id(class="form-control") }}
         </div>
-    </div>
-</form>
+        <div class="form-group">
+            {{ form.vin_number.label }}
+            {{ form.vin_number(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.begin_date.label }}
+            {{ form.begin_date(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.end_date.label }}
+            {{ form.end_date(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary")}}
+        </div>
+    </form>
+</div>
 {% endblock %}
