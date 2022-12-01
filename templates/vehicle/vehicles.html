@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="table-responsive">
+    <table class="table table-sm table-borderless mb-0">
+        <thead class="thead-dark">
+            <tr>
+                <th>VIN</th>
+                <th>Brand</th>
+                <th>Price</th>
+                <th>Condition</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehicle in vehicles %}
+            <tr>
+                <th scope="row">{{ vehicle.vin_number }}</th>
+                <td>{{ vehicle.brand }}</td>
+                <td>{{ vehicle.price }}</td>
+                <td>{{ vehicle.condition }}</td>
+                <td><a class="badge badge-warning" href="{{ url_for('edit_vehicle', vin_number=vehicle.vin_number) }}">Edit</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<br>
+<!-- Pagination Links-->
+<div class="text-right">
+    <a href="{{ url_for('vehicles', page=vehicles.prev_num) }}"
+       class="btn btn-outline-dark 
+       {% if vehicles.page == 1 %}disabled{% endif %}">
+        &laquo;
+    </a><!-- Loop through the number of pages to display a link for each-->
+    {% for page_num in vehicles.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}{% if page_num %}
+<!-- Check for the active page and set the link to "Active"-->
+            {% if vehicles.page == page_num %}
+            <a href="{{ url_for('vehicles', page=page_num) }}"
+               class="btn btn-dark">
+                {{ page_num }}
+            </a>
+            {% else %}
+            <a href="{{ url_for('vehicles', page=page_num) }}"
+               class="btn btn-outline-dark">
+                {{ page_num }}
+            </a>
+            {% endif %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}    <a href="{{ url_for('vehicles', page=vehicles.next_num) }}"
+       class="btn btn-outline-dark 
+       {% if vehicles.page == vehicles.pages %}disabled{% endif %}">
+        &raquo;
+    </a>
+</div>
+<p class="text-right mt-3">
+   Showing page {{ vehicles.page }} of {{ vehicles.pages }}
+</p>
+    
+{% endblock %}

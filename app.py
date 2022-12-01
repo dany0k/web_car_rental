@@ -137,7 +137,7 @@ def create_vehicle():
             form.populate_obj(new_vehicle)
             db.session.add(new_vehicle)
             db.session.commit()
-            return redirect(url_for('show_vehicles'))
+            return redirect(url_for('vehicles'))
     return render_template(
         './vehicle/create-vehicle.html',
         form=form
@@ -164,7 +164,7 @@ def edit_vehicle(vin_number):
             db.session.delete(cur_vehicle)
             db.session.commit()
             flash('Vehicle was successfully deleted!')
-            return redirect(url_for('show_vehicles', vin_number=vin_number))
+            return redirect(url_for('vehicles', vin_number=vin_number))
         
         if not vin_number or not brand or not price:
             flash('Please fill all fields')
@@ -172,7 +172,7 @@ def edit_vehicle(vin_number):
             form.populate_obj(cur_vehicle)
             db.session.add(cur_vehicle)       
             db.session.commit()
-            return redirect(url_for('show_vehicles'))
+            return redirect(url_for('vehicles'))
     return render_template(
         './vehicle/edit-vehicle.html',
         vehicle=cur_vehicle,
@@ -180,10 +180,12 @@ def edit_vehicle(vin_number):
 
 
 @app.route('/vehicle-list')
-def show_vehicles():
+def vehicles():
+    page = request.args.get('page', 1, type=int)
+    vehicles = Vehicle.query.paginate(page=page, per_page=20)
     return render_template(
-        './vehicle/vehicle-list.html'
-        , vehicles=db.session.query(Vehicle).all())
+        './vehicle/vehicles.html',
+        vehicles=vehicles)
 
 
 ###########

@@ -9,6 +9,7 @@ h1 {
 }
 
 h3 {
+    color: white;
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
@@ -89,27 +90,27 @@ body {
 
 .nav-pane ul {
     display: flex;
-    background: rgb(230, 228, 228);
+    background: #343A40;
 }
 
 .nav-pane li a {
    display: flex;
    padding: 20px;
     text-decoration: none;
-    color: gray;
+    color: White;
     font-weight: bold;
     border: 1px solid rgb(185, 185, 185);
 }
 
 .nav-pane li a:hover {
-    background-color: rgb(214, 214, 214);
+    background-color: #343A40;
     transition: background .5s ease;
 }
 
 .nav-bottom {
     display: flex;
     padding: 5px;
-    background-color: rgb(230, 228, 228);
+    background-color: #343A40;
     width: 100%;
 }
 
@@ -124,12 +125,12 @@ body {
     
     padding: 12px;
     text-decoration: none;
-    color: gray;
+    color: white;
     border-right: 1px solid gray;
  }
 
  .nav-bottom li a:hover {
-    background-color: rgb(214, 214, 214);
+    background-color: #414850;
     transition: background .5s ease;
  }
 
@@ -146,7 +147,7 @@ body {
 
 .sidebar {
     margin-top: 4px;
-    background-color: rgb(230, 228, 228);
+    background-color: #343A40;
     width: 10%;
     height: 1000px;
     padding: 20px;
@@ -164,7 +165,7 @@ body {
 
 .skills li a {
     text-decoration: none;
-    color: black;
+    color: white;
 }
 
 /*
@@ -208,7 +209,7 @@ Contackt page
 }
 
 .side-bar-con-pg {
-    color: gray;
+    color: white;
     line-height: 150%;
     padding: 10px;
     margin-top: 20px;
