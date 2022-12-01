@@ -293,7 +293,7 @@ def create_rent():
             form.populate_obj(new_rent)
             db.session.add(new_rent)
             db.session.commit()
-            return redirect(url_for('show_rent'))
+            return redirect(url_for('rents'))
     return render_template(
         './rent/create-rent.html',
         form=form
@@ -313,13 +313,13 @@ def edit_rent(rent_id):
         client_id = form.client_id.data
         vin_number = form.vin_number.data
         begin_date = form.begin_date.data
-        end_date = form.end_date.date
+        end_date = form.end_date.data
         form.populate_obj(cur_rent)
         if form.delete.data:
             db.session.delete(cur_rent)
             db.session.commit()
             flash('Rent was successfully deleted!')
-            return redirect(url_for('show_rent',
+            return redirect(url_for('rents',
              rent_id=rent_id))
         
         if not vin_number or not client_id or not begin_date\
@@ -329,18 +329,20 @@ def edit_rent(rent_id):
             form.populate_obj(cur_rent)
             db.session.add(cur_rent)       
             db.session.commit()
-            return redirect(url_for('show_rent'))
+            return redirect(url_for('rents'))
     return render_template(
         './rent/edit-rent.html',
         rent=cur_rent,
         form=form)
 
 
-@app.route('/rent-list')
-def show_rent():
+@app.route('/rents')
+def rents():
+    page = request.args.get('page', 1, type=int)
+    rents = Rent.query.paginate(page=page, per_page=20)
     return render_template(
-        './rent/rent-list.html'
-        , rents=db.session.query(Rent).all())
+        './rent/rents.html',
+        rents=rents)
 
 
 @app.route('/')
