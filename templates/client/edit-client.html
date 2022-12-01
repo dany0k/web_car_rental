@@ -22,17 +22,15 @@
                 <td>{{ subfield.label }}</td>
             </tr>
             {% endfor %}
-            <td colspan="3">
-                {% if client.client_id %}
-                {{ form.delete(class="btn btn-danger btn-medium") }}
-                {% endif %}
-            </td>
 
 
         </div>
         <div class="form-group">
             {{ form.submit(class="btn btn-primary") }}
             <a class="btn btn-primary" href="../client-list">Cancel</a>
+            {% if client.client_id %}
+            {{ form.delete(class="btn btn-danger btn-medium") }}
+            {% endif %}
         </div>
     </form>
 </div>
