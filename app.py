@@ -216,7 +216,7 @@ def create_parking():
             form.populate_obj(new_parking)
             db.session.add(new_parking)
             db.session.commit()
-            return redirect(url_for('show_parking'))
+            return redirect(url_for('parkings'))
     return render_template(
         './parking/create-parking.html',
         form=form
@@ -236,7 +236,7 @@ def edit_parking(parking_id):
             db.session.delete(cur_parking)
             db.session.commit()
             flash('Parking was successfully deleted!')
-            return redirect(url_for('show_parking',
+            return redirect(url_for('parkings',
              vin_number=vin_number))
         
         if not vin_number:
@@ -245,18 +245,20 @@ def edit_parking(parking_id):
             form.populate_obj(cur_parking)
             db.session.add(cur_parking)       
             db.session.commit()
-            return redirect(url_for('show_parking'))
+            return redirect(url_for('parkings'))
     return render_template(
         './parking/edit-parking.html',
         parking=cur_parking,
         form=form)
 
 
-@app.route('/parking-list')
-def show_parking():
+@app.route('/parkings')
+def parkings():
+    page = request.args.get('page', 1, type=int)
+    parkings = Parking.query.paginate(page=page, per_page=20)
     return render_template(
-        './parking/parking-list.html',
-         parking=db.session.query(Parking).all())
+        './parking/parkings.html',
+        parkings=parkings)
 
 
 ########
