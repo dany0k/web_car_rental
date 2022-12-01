@@ -1,7 +1,20 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    <h2>{% block title %} {{ post['parking_id'] }} {{ post['vin_number'] }} {% endblock %}
-        <span class="badge badge-primary">id: {{ post['parking_id'] }}</span>
-    </h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block tittle%} {% endblock %}</title>
+</head>
+<body>
+    {% extends 'base.html' %}
+    {% block content %}
+        <h1>{% block titlle %}</h1>
+        <h1>Parking№{{ parking.parking_id }}</h1>
+        {% endblock %}
+        <h2>Parking ID: {{ parking.parking_id }} </h2>
+        <h2>VIN: {{ parking.vin_number }}</h2>
+        <a class="badge badge-primary" style="font-size: large;" href="../parking-list">Back to parking list</a>
     {% endblock %}
+</body>
+</html>

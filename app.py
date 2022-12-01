@@ -5,9 +5,6 @@ from model import *
 from forms import *
 from flask import render_template, request, abort, flash, redirect, url_for
 
-from sqlalchemy import create_engine, select
-from sqlmodel import Session
-
 
 def get_db_connection():
     conn = sqlite3.connect('./db/carrental.db')
@@ -26,13 +23,8 @@ def get_vehicle(vin_number):
 
 
 def get_parking(parking_id):
-    conn = get_db_connection()
-    cur_parking = conn.execute('SELECT * FROM parking WHERE parking_id = ?',
-                               (parking_id,)).fetchone()
-    conn.close()
-    if cur_parking is None:
-        abort(404)
-    return cur_parking
+    return db.session.query(Parking)\
+        .filter(Parking.parking_id == parking_id).one_or_none()
 
 
 def get_rent(rent_id):
@@ -91,7 +83,7 @@ def edit_client(client_id):
         form.firstname.data = cur_client.firstname
         form.surname.data = cur_client.surname
         if cur_client.violation == 1:
-            form.violation.default = '1'
+            form.violation.default = 1
     if request.method == 'POST' and form.validate_on_submit():
         firstname = form.firstname.data
         surname = form.surname.data
@@ -194,19 +186,8 @@ def edit_vehicle(vin_number):
         form=form)
 
 
-@app.route('/<string:vin_number>/delete-vehicle', methods=('POST',))
-def delete_vehicle(vin_number):
-    conn = get_db_connection()
-    conn.execute('DELETE FROM vehicle WHERE vin_number = ?', [vin_number])
-    conn.commit()
-    conn.close()
-    flash('Vehicle was successfully deleted!')
-    return redirect(url_for('show_vehicles'))
-
-
 @app.route('/vehicle-list')
 def show_vehicles():
-    
     return render_template(
         './vehicle/vehicle-list.html'
         , vehicles=db.session.query(Vehicle).all())
@@ -220,60 +201,60 @@ def show_vehicles():
 @app.route('/parking/<int:parking_id>')
 def parking(parking_id):
     cur_parking = get_parking(parking_id)
-    return render_template('./parking/parking.html', post=cur_parking)
+    if cur_parking is None:
+        return 'Not found', 404
+    return render_template(
+        './parking/parking.html',
+        parking=cur_parking)
 
 
 @app.route('/create-parking', methods=('GET', 'POST'))
 def create_parking():
-    conn = get_db_connection()
-    if request.method == 'POST':
-        vin_number = request.form['vin_number']
-        conn.row_factory = lambda cursor, row: row[0]
-        c = conn.cursor()
-        vins_list = c.execute('SELECT vin_number FROM parking').fetchall()
-        for i in range(len(vins_list)):
-            if vins_list[i] != vin_number and i == len(vins_list) - 1:
-                flash('This VIN number is not exist.')
-                return render_template('./parking/create-parking.html')
-            elif vins_list[i] == vin_number:
-                break
+    form = CreateParkingForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        vin_number = form.vin_number
+
         if not vin_number:
             flash('Please fill all fields')
         else:
-            conn.execute('INSERT INTO parking (vin_number) VALUES (?)',
-                         [vin_number])
-            conn.commit()
-            conn.close()
-    return render_template('./parking/create-parking.html')
+            new_parking = Parking()
+            form.populate_obj(new_parking)
+            db.session.add(new_parking)
+            db.session.commit()
+            return redirect(url_for('show_parking'))
+    return render_template(
+        './parking/create-parking.html',
+        form=form
+    )
 
 
 @app.route('/parking/<int:parking_id>/edit-parking', methods=('GET', 'POST'))
 def edit_parking(parking_id):
     cur_parking = get_parking(parking_id)
-
-    if request.method == 'POST':
-        conn = get_db_connection()
-        vin_number = request.form['vin_number']
-        conn.row_factory = lambda cursor, row: row[0]
-        c = conn.cursor()
-        vins_list = c.execute('SELECT vin_number FROM parking').fetchall()
-        for i in range(len(vins_list)):
-            if vins_list[i] != vin_number and i == len(vins_list) - 1:
-                flash('This VIN number is not exist.')
-                return render_template('./parking/edit-parking.html', post=cur_parking)
-            elif vins_list[i] == vin_number:
-                break
+    form = EditAndDeleteParkingForm()
+    if request.method == 'GET':
+        form.vin_number.data = cur_parking.vin_number
+    if request.method == 'POST' and form.validate_on_submit():
+        vin_number = form.vin_number.data
+        form.populate_obj(cur_parking)
+        if form.delete.data:
+            db.session.delete(cur_parking)
+            db.session.commit()
+            flash('Parking was successfully deleted!')
+            return redirect(url_for('show_parking',
+             vin_number=vin_number))
+        
         if not vin_number:
             flash('Please fill all fields')
         else:
-            conn.execute('UPDATE parking SET vin_number = ?'
-                         ' WHERE parking_id = ?',
-                         (vin_number, parking_id))
-            conn.commit()
-            conn.close()
+            form.populate_obj(cur_parking)
+            db.session.add(cur_parking)       
+            db.session.commit()
             return redirect(url_for('show_parking'))
-
-    return render_template('./parking/edit-parking.html', post=cur_parking)
+    return render_template(
+        './parking/edit-parking.html',
+        parking=cur_parking,
+        form=form)
 
 
 @app.route('/parking/<int:parking_id>/delete-parking', methods=('POST',))
@@ -288,10 +269,9 @@ def delete_parking(parking_id):
 
 @app.route('/parking-list')
 def show_parking():
-    conn = get_db_connection()
-    cur_parking = conn.execute('SELECT * FROM parking').fetchall()
-    conn.close()
-    return render_template('./parking/parking-list.html', posts=cur_parking)
+    return render_template(
+        './parking/parking-list.html',
+         parking=db.session.query(Parking).all())
 
 
 ########

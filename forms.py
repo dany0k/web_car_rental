@@ -89,3 +89,25 @@ class EditAndDeleteVehicleForm(FlaskForm):
         label=('Condition'),
         choices=[('0', 'Available'), ('1', 'Missing')],
         default='0')
+
+
+class ParkingForm(FlaskForm):
+    vin_number = StringField(label='VIN',
+                             validators=[DataRequired(), Length(min=18, max=18)])
+    
+
+
+class CreateParkingForm(FlaskForm):
+    submit = SubmitField(label=('Submit'))
+
+    vin_number = StringField(label='VIN',
+                             validators=[DataRequired(), Length(min=18, max=18)])
+
+
+
+class EditAndDeleteParkingForm(FlaskForm):
+    submit = SubmitField(label=('Submit'))
+    delete = SubmitField(label=('Delete'))
+
+    vin_number = StringField(label='VIN',
+                             validators=[DataRequired(), Length(min=18, max=18)])
