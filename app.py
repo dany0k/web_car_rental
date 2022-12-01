@@ -1,6 +1,4 @@
-import sqlite3
-
-from app_config import app, db
+from app_config import app
 from model import *
 from forms import *
 from flask import render_template, request, flash, redirect, url_for
@@ -8,25 +6,25 @@ from flask import render_template, request, flash, redirect, url_for
 
 def get_client(client_id):
     """Get client by id from database"""
-    return db.session.query(Client)\
+    return db.session.query(Client) \
         .filter(Client.client_id == int(client_id)).one_or_none()
 
 
 def get_vehicle(vin_number):
     """Get vehicle by id from database"""
-    return db.session.query(Vehicle)\
+    return db.session.query(Vehicle) \
         .filter(Vehicle.vin_number == vin_number).one_or_none()
 
 
 def get_parking(parking_id):
     """Get parking place by id from database"""
-    return db.session.query(Parking)\
+    return db.session.query(Parking) \
         .filter(Parking.parking_id == parking_id).one_or_none()
 
 
 def get_rent(rent_id):
     """Get rent by id from database"""
-    return db.session.query(Rent)\
+    return db.session.query(Rent) \
         .filter(Rent.rent_id == rent_id).one_or_none()
 
 
@@ -39,7 +37,7 @@ def client(client_id):
     if cur_client is None:
         return 'Not found', 404
     return render_template(
-        './client/client.html', 
+        './client/client.html',
         client=cur_client,
     )
 
@@ -56,7 +54,7 @@ def create_client():
     return render_template(
         './client/create-client.html',
         form=form
-        )
+    )
 
 
 @app.route('/client/<int:client_id>/edit-client', methods=('GET', 'POST'))
@@ -75,13 +73,12 @@ def edit_client(client_id):
             db.session.commit()
             flash('Client was successfully deleted!')
             return redirect(url_for('clients', client_id=client_id))
-        
+
         form.populate_obj(cur_client)
-        db.session.add(cur_client)       
+        db.session.add(cur_client)
         db.session.commit()
         return redirect(url_for('clients'))
     return render_template('./client/edit-client.html', client=cur_client, form=form)
-
 
 
 @app.route('/clients')
@@ -103,7 +100,7 @@ def vehicle(vin_number):
         return 'Not found', 404
     return render_template(
         './vehicle/vehicle.html',
-         vehicle=cur_vehicle)
+        vehicle=cur_vehicle)
 
 
 @app.route('/create-vehicle', methods=('GET', 'POST'))
@@ -138,9 +135,9 @@ def edit_vehicle(vin_number):
             db.session.commit()
             flash('Vehicle was successfully deleted!')
             return redirect(url_for('vehicles', vin_number=vin_number))
-        
+
         form.populate_obj(cur_vehicle)
-        db.session.add(cur_vehicle)       
+        db.session.add(cur_vehicle)
         db.session.commit()
         return redirect(url_for('vehicles'))
     return render_template(
@@ -202,10 +199,10 @@ def edit_parking(parking_id):
             db.session.commit()
             flash('Parking was successfully deleted!')
             return redirect(url_for('parkings',
-             vin_number=vin_number))
-        
+                                    vin_number=vin_number))
+
         form.populate_obj(cur_parking)
-        db.session.add(cur_parking)       
+        db.session.add(cur_parking)
         db.session.commit()
         return redirect(url_for('parkings'))
     return render_template(
@@ -235,7 +232,7 @@ def rent(rent_id):
         return 'Not found', 404
     return render_template(
         './rent/rent.html',
-         rent=cur_rent)
+        rent=cur_rent)
 
 
 @app.route('/create-rent', methods=('GET', 'POST'))
@@ -269,10 +266,10 @@ def edit_rent(rent_id):
             db.session.commit()
             flash('Rent was successfully deleted!')
             return redirect(url_for('rents',
-             rent_id=rent_id))
-        
+                                    rent_id=rent_id))
+
         form.populate_obj(cur_rent)
-        db.session.add(cur_rent)       
+        db.session.add(cur_rent)
         db.session.commit()
         return redirect(url_for('rents'))
     return render_template(
