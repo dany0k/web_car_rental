@@ -1,0 +1,275 @@
+/*
+Styles
+*/
+
+h1 {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+h4 {
+    font-size: 80%;
+}
+
+h5 {
+    font-size: 80%;
+}
+
+h1 {
+    font: 100% serif;
+}
+
+h10 {
+    margin-left: 10px;
+    font-size: 40%;
+    color: gray;
+    line-height: 1.5px;
+    font: 12pt monospace;  
+}
+
+p {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    margin-left: 10px;
+    text-indent: 20px;
+}
+
+
+/*
+Index.html page
+*/
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: url(img/background.jpg) no-repeat center center / cover; 
+}
+
+.my-container {
+    width: 100%;
+    min-height: 600px;
+    border: 5px solid #fff;
+    margin: 0 auto;
+    background: #fff;
+}
+
+.my-header {
+    display: flex;
+    height: 150px;
+}
+
+.my-title-block {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 200%;
+    width: 100%;
+    height: 100%;
+    color: #fff;
+    margin-right: 10px;
+}
+
+.stroke {
+    font: 2em Arial, sans-serif;
+    -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-color: black;
+}
+
+.nav-pane ul {
+    display: flex;
+    background: rgb(230, 228, 228);
+}
+
+.nav-pane li a {
+   display: flex;
+   padding: 20px;
+    text-decoration: none;
+    color: gray;
+    font-weight: bold;
+    border: 1px solid rgb(185, 185, 185);
+}
+
+.nav-pane li a:hover {
+    background-color: rgb(214, 214, 214);
+    transition: background .5s ease;
+}
+
+.nav-bottom {
+    display: flex;
+    padding: 5px;
+    background-color: rgb(230, 228, 228);
+    width: 100%;
+}
+
+.nav-bottom ul {
+    display: flex;
+    width: 5px;
+}
+
+.nav-bottom li a {
+    display: flex;
+    font-weight: bold;
+    
+    padding: 12px;
+    text-decoration: none;
+    color: gray;
+    border-right: 1px solid gray;
+ }
+
+ .nav-bottom li a:hover {
+    background-color: rgb(214, 214, 214);
+    transition: background .5s ease;
+ }
+
+.content-wrapper {
+    height: 100%;
+    display: flex;  
+}
+
+.content {
+    width: 70%;
+    padding: 20px;
+    line-height: 20px;
+}
+
+.sidebar {
+    margin-top: 4px;
+    background-color: rgb(230, 228, 228);
+    width: 10%;
+    height: 1000px;
+    padding: 20px;
+}
+
+.skills li{
+    padding: 10px 0;
+    transition: transform .5s ease;
+    cursor: pointer;
+}
+
+.skills li:hover{
+    transform: translateX(10px);
+}
+
+.skills li a {
+    text-decoration: none;
+    color: black;
+}
+
+/*
+Contackt page
+*/
+
+.header-con-pg {    
+    border: 2px solid gray;
+    background-color: rgb(233, 233, 233);
+    display: flex;
+    height: 150px;  
+}
+
+.title-block-con-pg {
+    margin-top: 10px;
+    margin-left: 10px;
+    justify-content: left;
+    align-items: left;
+    display: flex;
+    font-size: 300%;
+    width: 80%;
+    height: 100%;
+    line-height: 30px;
+    color: black;
+    margin-right: 10px;
+}
+
+.title-content-con-pg { 
+    width: 800px;
+    justify-content: left;
+    align-items: left;
+    display: flex;
+}
+
+.userpic-con-pg {
+    margin-left: 1px;
+    display: flex;
+    height: 100%;
+    width: 20%;
+    background: url(img/me.jpg) no-repeat center center / cover;
+}
+
+.side-bar-con-pg {
+    color: gray;
+    line-height: 150%;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.contant-con-pg {
+    line-height: 150%;
+    padding: 10px;
+    margin-left: 100px;;
+    margin-top: 20px;
+    text-decoration: none;
+}
+
+.contant-con-pg li a {
+    align-content: flex-end;
+    text-decoration: none;
+}
+
+.backbutton a {
+    display: flex;
+    padding: 10px;
+    text-decoration: none;
+    color: gray;
+    font-weight: bold;
+ }
+ 
+ .backbutton a:hover {
+     background-color: rgb(214, 214, 214);
+     transition: background .5s ease;
+ }
+
+ .backbutton {
+   
+    position: relative;
+    width: 140px;
+    height: 30px;
+ }  
+
+ .header-projects {
+    display: flex;
+    height: 100px;
+}
+
+.title-block-projects {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 200%;
+    width: 100%;
+    height: 100%;
+    background: url(https://i.ytimg.com/vi/krtSJ80ODJo/maxresdefault.jpg) no-repeat center center / cover;
+    color: #fff;    
+    font: bold;
+    margin-right: 10px;
+}
+
+.contant-wrapper {
+    padding: 20px;
+    line-height: 150%;
+}
+
+.contant a {
+    text-decoration: none;
+}
