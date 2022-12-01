@@ -1,3 +1,3 @@
 # web_car_rental
 
-2
+Simple web-app that allows user view tables from carrental.db sqlite3 database.
