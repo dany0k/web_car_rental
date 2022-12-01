@@ -1,15 +1,11 @@
 import sqlite3
 
-from app_config import app, db
+from app_config import app, db, mod
 from model import *
 from forms import *
 from flask import render_template, request, abort, flash, redirect, url_for
+from flask_paginate import Pagination, get_page_parameter
 
-
-def get_db_connection():
-    conn = sqlite3.connect('./db/carrental.db')
-    conn.row_factory = sqlite3.Row
-    return conn
 
 
 def get_client(client_id):
@@ -63,7 +59,7 @@ def create_client():
             form.populate_obj(new_client)
             db.session.add(new_client)
             db.session.commit()
-            return redirect(url_for('show_clients'))
+            return redirect(url_for('clients'))
     return render_template(
         './client/create-client.html',
         form=form
@@ -88,7 +84,7 @@ def edit_client(client_id):
             db.session.delete(cur_client)
             db.session.commit()
             flash('Client was successfully deleted!')
-            return redirect(url_for('show_clients', client_id=client_id))
+            return redirect(url_for('clients', client_id=client_id))
         
         if not firstname or not surname or not violation:
             flash('Please fill all fields')
@@ -96,16 +92,18 @@ def edit_client(client_id):
             form.populate_obj(cur_client)
             db.session.add(cur_client)       
             db.session.commit()
-            return redirect(url_for('show_clients'))
+            return redirect(url_for('clients'))
     return render_template('./client/edit-client.html', client=cur_client, form=form)
 
 
 
-@app.route('/client-list')
-def show_clients():
+@app.route('/clients')
+def clients():
+    page = request.args.get('page', 1, type=int)
+    clients = Client.query.paginate(page=page, per_page=20)
     return render_template(
-        './client/client-list.html'
-        , clients=db.session.query(Client).all())
+        './client/clients.html',
+        clients=clients)
 
 
 ###########
@@ -250,16 +248,6 @@ def edit_parking(parking_id):
         './parking/edit-parking.html',
         parking=cur_parking,
         form=form)
-
-
-@app.route('/parking/<int:parking_id>/delete-parking', methods=('POST',))
-def delete_parking(parking_id):
-    conn = get_db_connection()
-    conn.execute('DELETE FROM parking WHERE parking_id = ?', (parking_id,))
-    conn.commit()
-    conn.close()
-    flash('Parking was successfully deleted!')
-    return redirect(url_for('show_parking'))
 
 
 @app.route('/parking-list')

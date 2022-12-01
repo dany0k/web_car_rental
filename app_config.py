@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
+from flask import Blueprint
+from flask_paginate import Pagination, get_page_parameter
 import os.path
 
 class Config():
@@ -14,5 +16,6 @@ class Config():
 
 app = Flask(__name__)
 app.config.from_object(Config())
+mod = Blueprint('app', __name__)
 db = SQLAlchemy(app=app, session_options={'autoflush': False})
 csrf = CSRFProtect(app)

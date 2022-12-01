@@ -9,8 +9,8 @@
     <title>{% block title %} {% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="./../static/css/reset.css">
-    <link rel="stylesheet" href="./../static/css/styles.css">
+    <link rel="stylesheet" href="./../../static/css/reset.css">
+    <link rel="stylesheet" href="./../../static/css/styles.css">
 </head>
 <body>
     <div class="my-container">
@@ -21,7 +21,7 @@
         </div>
         <div class="nav-pane">
             <ul>
-                <li><a href="{{url_for('show_clients')}}">Clients</a></li>
+                <li><a href="{{url_for('clients')}}">Clients</a></li>
                 <li><a href="{{url_for('show_vehicles')}}">Vehicles</a></li>
                 <li><a href="{{url_for('show_parking')}}">Parking</a></li>
                 <li><a href="{{url_for('show_rent')}}">Rent</a></li>
