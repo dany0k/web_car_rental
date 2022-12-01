@@ -37,7 +37,7 @@ def get_rent(rent_id):
 ############
 
 
-@app.route('/<int:client_id>')
+@app.route('/client/<int:client_id>')
 def client(client_id):
     cur_client = get_client(client_id)
     if cur_client is None:
@@ -70,7 +70,7 @@ def create_client():
         )
 
 
-@app.route('/<int:client_id>/edit-client', methods=('GET', 'POST'))
+@app.route('/client/<int:client_id>/edit-client', methods=('GET', 'POST'))
 def edit_client(client_id):
     cur_client = get_client(client_id)
     form = EditAndDeleteClientForm()
@@ -113,7 +113,7 @@ def show_clients():
 ###########
 
 
-@app.route('/<string:vin_number>')
+@app.route('/vehicle/<string:vin_number>')
 def vehicle(vin_number):
     cur_vehicle = get_vehicle(vin_number)
     if cur_vehicle is None:
@@ -146,7 +146,7 @@ def create_vehicle():
     )
 
 
-@app.route('/<string:vin_number>/edit-vehicle', methods=('GET', 'POST'))
+@app.route('/vehicle/<string:vin_number>/edit-vehicle', methods=('GET', 'POST'))
 def edit_vehicle(vin_number):
     cur_vehicle = get_vehicle(vin_number)
     form = EditAndDeleteVehicleForm()
