@@ -2,11 +2,17 @@ from app_config import app, db
 from model import *
 from forms import *
 from flask import render_template, request, flash, redirect, url_for
+from sqlalchemy import exc
 
 
 def get_all_items_from_table(Table):
     """Select all items from DB`s table"""
     return db.session.query(Table).one_or_none()
+
+
+def count_rows_in_table(Table):
+    """Counts all rows in table"""
+    return db.session.query(Table).count()
 
 
 def get_client(client_id):
@@ -18,7 +24,8 @@ def get_client(client_id):
 def get_vehicle(vin_number):
     """Select vehicle from Vehicle table by its id"""
     return db.session.query(Vehicle)\
-        .filter(Vehicle.vin_number == int(vin_number)).one_or_none()
+        .filter(Vehicle.vin_number == vin_number).one_or_none()
+
 
 def get_parking(parking_id):
     """Select parking from Parking table by its id"""
@@ -30,6 +37,37 @@ def get_rent(rent_id):
     """Select rent from Rent table by its id"""
     return db.session.query(Rent)\
         .filter(Rent.rent_id == int(rent_id)).one_or_none()
+
+
+def can_rent(vin_number, client_id):
+    """Method check can user take the car (by VIN) in rent"""
+    is_rented = db.session.query(Rent)\
+        .filter(Rent.vin_number == vin_number).all()
+    cond = db.session.query(Vehicle).first().get_condition()
+    vins = db.session.query(Vehicle)\
+        .filter(Vehicle.vin_number == vin_number).one_or_none()
+    ids = db.session.query(Client)\
+        .filter(Client.client_id == client_id).one_or_none()
+    if vins == None:
+        return 3
+    elif ids == None:
+        return 4
+    elif cond == 0:
+        return 2
+    elif not len(is_rented) == 0:
+        if is_rented[0].get_end_date() == 'IN_RENT':
+            return 1
+    else:
+        return 0
+
+    
+def is_vin_exists(vin_number):
+    vins = db.session.query(Vehicle)\
+        .filter(Vehicle.vin_number == vin_number).one_or_none()
+    if vins == None:
+        return False
+    else:
+        return True
 
 # Clients
 
@@ -92,11 +130,15 @@ def create_vehicle():
     """Insert vehicle into Vehicle table"""
     form = CreateVehicleForm()
     if request.method == 'POST' and form.validate_on_submit():
-        new_vehicle = Vehicle()
-        form.populate_obj(new_vehicle)
-        db.session.add(new_vehicle)
-        db.session.commit()
-        return redirect(url_for('vehicles'))
+        try:
+            new_vehicle = Vehicle()
+            form.populate_obj(new_vehicle)
+            db.session.add(new_vehicle)
+            db.session.commit()
+            return redirect(url_for('vehicles'))
+        except exc.IntegrityError:
+            flash("This VIN already exsists")
+            db.session.rollback()
     return render_template(
         './vehicle/create-vehicle.html',
         form=form
@@ -121,11 +163,14 @@ def edit_vehicle(vin_number):
             db.session.commit()
             flash('Vehicle was successfully deleted!')
             return redirect(url_for('vehicles', vin_number=vin_number))
-        
-        form.populate_obj(cur_vehicle)
-        db.session.add(cur_vehicle)       
-        db.session.commit()
-        return redirect(url_for('vehicles'))
+        try:
+            form.populate_obj(cur_vehicle)
+            db.session.add(cur_vehicle)       
+            db.session.commit()
+            return redirect(url_for('vehicles'))
+        except exc.IntegrityError:
+            flash("This VIN already exsists")
+            db.session.rollback()
     return render_template(
         './vehicle/edit-vehicle.html',
         vehicle=cur_vehicle,
@@ -150,12 +195,15 @@ def vehicles():
 def create_parking():
     """Insert parking into Parking table"""
     form = CreateParkingForm()
-    if request.method == 'POST' and form.validate_on_submit():
-        new_parking = Parking()
-        form.populate_obj(new_parking)
-        db.session.add(new_parking)
-        db.session.commit()
-        return redirect(url_for('parkings'))
+    if request.method == 'POST' and form.validate_on_submit():  
+        if is_vin_exists(form.vin_number._value()):
+            new_parking = Parking()
+            form.populate_obj(new_parking)
+            db.session.add(new_parking)
+            db.session.commit()
+            return redirect(url_for('parkings'))
+        else:
+            flash("No such VIN")
     return render_template(
         './parking/create-parking.html',
         form=form
@@ -208,11 +256,22 @@ def create_rent():
     """Insert rent into Rent table"""
     form = CreateRentForm()
     if request.method == 'POST' and form.validate_on_submit():
-        new_rent = Rent()
-        form.populate_obj(new_rent)
-        db.session.add(new_rent)
-        db.session.commit()
-        return redirect(url_for('rents'))
+        rentable = can_rent(form.vin_number._value(), form.client_id._value())
+        if  rentable == 1:
+            flash('This car is in rent')
+        elif rentable == 2:
+            flash('This car is unavailable')
+        elif rentable == 3:
+            flash('No such VIN')
+        elif rentable == 4:
+            flash('No such ClientID')
+        
+        else:
+            new_rent = Rent()
+            form.populate_obj(new_rent)
+            db.session.add(new_rent)
+            db.session.commit()
+            return redirect(url_for('rents'))
     return render_template(
         './rent/create-rent.html',
         form=form
