@@ -1,7 +1,55 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, RadioField
+from wtforms import widgets, StringField, SubmitField, RadioField, SelectMultipleField, BooleanField
 from wtforms.validators import DataRequired, Length, Regexp
 
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
+
+class ClientsForm(FlaskForm):
+    select_order = MultiCheckboxField(
+        label='ID Order',
+        choices=[
+            (1, 'Ascending ID'),
+            (2, 'Descending ID')
+        ])
+    select_violation = MultiCheckboxField(
+        label='Violation Order',
+        choices=[
+            (1, 'Ascending'),
+            (2, 'Descending')
+        ])
+    serch_name = StringField(
+        label='Name'
+    )
+    serch_surname = StringField(
+        label='Surname'
+    )
+
+    submit = SubmitField(label=('Submit'))
+    status_order = 0
+    status_violation = 0
+    status_name = 0
+    status_surname = 0
+
+
+    def set_status_order(self, val):
+        self.status_order = val
+
+
+    def set_status_violation(self, val):
+        self.status_violation = val
+    
+    
+    def set_status_name(self, val):
+        self.status_name = val
+
+
+    def set_status_surname(self, val):
+        self.status_surname = val
+ 
 
 class CreateClientForm(FlaskForm):
     submit = SubmitField(label=('Submit'))

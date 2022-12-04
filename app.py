@@ -2,7 +2,7 @@ from app_config import app, db
 from model import *
 from forms import *
 from flask import render_template, request, flash, redirect, url_for
-from sqlalchemy import exc
+from sqlalchemy import exc, desc
 
 
 def get_all_items_from_table(Table):
@@ -69,6 +69,41 @@ def is_vin_exists(vin_number):
     else:
         return True
 
+
+def check_status_order(selection):
+    if selection == []:
+        ClientsForm.set_status_order(ClientsForm, '0')
+    if selection == ['1']:
+        ClientsForm.set_status_order(ClientsForm, '1')
+    if selection == ['2']:
+        ClientsForm.set_status_order(ClientsForm, '2')
+
+
+def check_status_violation(selection):
+    if selection == []:
+        ClientsForm.set_status_violation(ClientsForm, '0')
+    if selection == ['1']:
+        ClientsForm.set_status_violation(ClientsForm, '1')
+    if selection == ['2']:
+        ClientsForm.set_status_violation(ClientsForm, '2')
+
+
+def check_status_name(selection):
+    if selection == '':
+        ClientsForm.set_status_name(ClientsForm, '0')
+    else:
+        ClientsForm.set_status_name(ClientsForm, '1')
+
+
+def check_status_surname(selection):
+    if selection == '':
+        ClientsForm.set_status_surname(ClientsForm, '0')
+    else:
+        ClientsForm.set_status_surname(ClientsForm, '1')
+
+
+
+
 # Clients
 
 
@@ -112,14 +147,50 @@ def edit_client(client_id):
     return render_template('./client/edit-client.html', client=cur_client, form=form)
     
 
-@app.route('/clients')
+@app.route('/clients', methods=('GET', 'POST'))
 def clients():
     """Select all clients from Client table"""
-    page = request.args.get('page', 1, type=int)
-    clients = Client.query.paginate(page=page, per_page=20)
+    form=ClientsForm()
+
+    page = request.args.get('page', 1, type=int) 
+    clients = Client.query
+
+    select_order = form.select_order.data
+    select_violation = form.select_violation.data
+    serch_name = form.serch_name.data
+    serch_surname = form.serch_surname.data
+    
+    if request.method == 'POST':
+        check_status_order(select_order)
+        check_status_violation(select_violation)
+    if ClientsForm.status_order == '0':
+        form.select_order.data = []
+    if ClientsForm.status_order == '1':
+        clients = Client.query
+        form.select_order.data = ['1']
+    if ClientsForm.status_order == '2':
+        clients = Client.query.order_by(desc(Client.client_id))
+        form.select_order.data = ['2']
+
+    if ClientsForm.status_violation == '0':
+        form.select_violation.data = []
+    if ClientsForm.status_violation == '1':
+        clients = clients.order_by(Client.violation)
+        form.select_violation.data = ['1']
+    if ClientsForm.status_violation == '2':
+        clients = clients.order_by(desc(Client.violation))
+        form.select_violation.data = ['2']
+
+    if len(str(serch_name)) > 0:
+        clients = clients.filter(Client.firstname == serch_name)
+
+    if len(str(serch_surname)) > 0:
+        clients = clients.filter(Client.surname == serch_surname)
+ 
     return render_template(
         './client/clients.html',
-        clients=clients)
+        clients=clients.paginate(page=page, per_page=20),
+        form=form)
 
 
 # Vehicle
