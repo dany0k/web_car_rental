@@ -15,15 +15,11 @@
             {{ form.surname(class="form-control") }}
         </div>
         <div class="form-group">
-            {% for subfield in form.violation %}
-            <tr>
-                <td>{{ subfield }} </td>
-                <td>{{ subfield.label }}</td>
-            </tr>
-            {% endfor %}
+            {{ form.violation.label }}
+            {{ form.violation(class="form-control") }}
         </div>
         <div class="form-group">
-            {{ form.submit(class="btn btn-primary")}}
+            {{ form.submit(class="btn btn-primary") }}
         </div>
     </form>
 </div>

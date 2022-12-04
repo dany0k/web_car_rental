@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm, Form
-from wtforms import StringField, SubmitField, RadioField, IntegerField, DateTimeField
+from wtforms import StringField, SubmitField, IntegerField, RadioField
 from wtforms.validators import DataRequired, Length, NumberRange
 
 
@@ -12,8 +12,7 @@ class CreateClientForm(FlaskForm):
     surname = StringField(label=('Surname'),
                           validators=[DataRequired(), Length(max=20)]
                           )
-    violation = RadioField(label=('Violation'), choices=[(
-        '0', 'Missing'), ('1', 'Available')], default='0')
+    violation = IntegerField(label=('Violation'))
 
 
 class EditAndDeleteClientForm(FlaskForm):
@@ -24,10 +23,8 @@ class EditAndDeleteClientForm(FlaskForm):
                             validators=[DataRequired(), Length(max=20)])
     surname = StringField(label=('Surname'),
                           validators=[DataRequired(), Length(max=20)])
-    violation = RadioField(
-        label=('Violation'),
-        choices=[('0', 'Missing'), ('1', 'Available')],
-        default='0')
+    violation = IntegerField(
+        label=('Violation'))
 
 
 class CreateVehicleForm(FlaskForm):

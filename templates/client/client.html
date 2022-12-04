@@ -15,11 +15,8 @@
         <h2>Client Name: {{ client.firstname }} </h2>
         <h2>Client Name: {{ client.surname }}</h2>
         <h3>Client ID: {{ client.client_id }}</h3>
-        {% if client.violation == 0 %}
-        <h3>Violation: false </h3>
-        {% else %}
-        <h3>Violation: true </h3>
-        {% endif %}
+        <h3>Violation Amount: {{ client.violation }}</h3>
+        
         <a class="badge badge-primary" style="font-size: large;" href="client-list">Back to client list</a>
     {% endblock %}
 </body>

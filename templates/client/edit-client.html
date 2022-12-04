@@ -16,14 +16,9 @@
             {{ form.surnname.errors if form.surname.errors }}
         </div>
         <div class="form-group">
-            {% for subfield in form.violation %}
-            <tr>
-                <td>{{ subfield }} </td>
-                <td>{{ subfield.label }}</td>
-            </tr>
-            {% endfor %}
-
-
+            {{ form.violation.label }}
+            {{ form.violation(class="form-control") }}
+            {{ form.violation.errors if form.violation.errors }}
         </div>
         <div class="form-group">
             {{ form.submit(class="btn btn-primary") }}
