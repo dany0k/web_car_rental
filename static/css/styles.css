@@ -167,6 +167,19 @@ body {
     color: white;
 }
 
+
+.filter_item li {
+    padding: 10px 0;
+    text-align: center;
+    transition: transform .5s ease;
+}
+
+
+.filter_item li a {
+    text-decoration: none;
+    color: white;
+}
+
 /*
 Contackt page
 */
