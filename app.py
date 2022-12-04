@@ -64,8 +64,7 @@ def edit_client(client_id):
     if request.method == 'GET':
         form.firstname.data = cur_client.firstname
         form.surname.data = cur_client.surname
-        if cur_client.violation == 1:
-            form.violation.default = 1
+        form.violation.data = cur_client.violation
     if request.method == 'POST' and form.validate_on_submit():
         form.populate_obj(cur_client)
         if form.delete.data:
