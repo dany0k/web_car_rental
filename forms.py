@@ -157,7 +157,7 @@ class CreateRentForm(FlaskForm):
         label='End Date', 
         validators=[
             DataRequired(),
-            Regexp('^\s*(3[01]|[12][0-9]|0?[1-9])\/(1[012]|0?[1-9])\/((?:19|20)\d{2})\ ([0-1]?[0-9]|2[0-3]):[0-5][0-9]\s*$', message='Invalide date format')
+            Regexp('(^\s*(3[01]|[12][0-9]|0?[1-9])\/(1[012]|0?[1-9])\/((?:19|20)\d{2})\ ([0-1]?[0-9]|2[0-3]):[0-5][0-9])|IN_RENT\s*$', message='Invalide date format')
         ])
 
 
@@ -189,6 +189,6 @@ class EditAndDeleteRentForm(FlaskForm):
         label='End Date', 
         validators=[
             DataRequired(),
-            Regexp('^\s*(3[01]|[12][0-9]|0?[1-9])\/(1[012]|0?[1-9])\/((?:19|20)\d{2})\ ([0-1]?[0-9]|2[0-3]):[0-5][0-9]\s*$', message='Invalide date format')
+            Regexp('(^\s*(3[01]|[12][0-9]|0?[1-9])\/(1[012]|0?[1-9])\/((?:19|20)\d{2})\ ([0-1]?[0-9]|2[0-3]):[0-5][0-9])|IN_RENT\s*$', message='Invalide date format')
         ])
         
