@@ -9,6 +9,11 @@
         <div class="form-group">
             {{ form.vin_number.label }}
             {{ form.vin_number(class="form-control") }}
+            {% for error in form.vin_number.errors %}
+            <div class="alert alert-danger">
+                 {{ error }}
+            </div> 
+            {% endfor%}
         </div>
         <div class="form-group">
             {{ form.submit(class="btn btn-primary")}}

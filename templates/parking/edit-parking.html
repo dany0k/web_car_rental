@@ -8,7 +8,11 @@
         <div class="form-group">
             {{ form.vin_number.label }}
             {{ form.vin_number(class="form-control") }}
-            {{ form.vin_number.errors if form.vin_number.errors }}
+            {% for error in form.vin_number.errors %}
+            <div class="alert alert-danger">
+                 {{ error }}
+            </div> 
+            {% endfor%}
         </div>
             
         </div>
