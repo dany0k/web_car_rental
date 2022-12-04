@@ -4,46 +4,39 @@ from forms import *
 from flask import render_template, request, flash, redirect, url_for
 
 
+def get_all_items_from_table(Table):
+    """Select all items from DB`s table"""
+    return db.session.query(Table).one_or_none()
+
+
 def get_client(client_id):
-    """Get client by id from database"""
+    """Select client from Client table by its id"""
     return db.session.query(Client)\
         .filter(Client.client_id == int(client_id)).one_or_none()
 
 
 def get_vehicle(vin_number):
-    """Get vehicle by id from database"""
+    """Select vehicle from Vehicle table by its id"""
     return db.session.query(Vehicle)\
-        .filter(Vehicle.vin_number == vin_number).one_or_none()
-
+        .filter(Vehicle.vin_number == int(vin_number)).one_or_none()
 
 def get_parking(parking_id):
-    """Get parking place by id from database"""
+    """Select parking from Parking table by its id"""
     return db.session.query(Parking)\
-        .filter(Parking.parking_id == parking_id).one_or_none()
+        .filter(Parking.parking_id == int(parking_id)).one_or_none()
 
 
 def get_rent(rent_id):
-    """Get rent by id from database"""
+    """Select rent from Rent table by its id"""
     return db.session.query(Rent)\
-        .filter(Rent.rent_id == rent_id).one_or_none()
-
+        .filter(Rent.rent_id == int(rent_id)).one_or_none()
 
 # Clients
 
 
-@app.route('/client/<int:client_id>')
-def client(client_id):
-    cur_client = get_client(client_id)
-    if cur_client is None:
-        return 'Not found', 404
-    return render_template(
-        './client/client.html', 
-        client=cur_client,
-    )
-
-
 @app.route('/create-client', methods=('GET', 'POST'))
 def create_client():
+    """Insert client into Client table"""
     form = CreateClientForm()
     if request.method == 'POST' and form.validate_on_submit():
         new_client = Client()
@@ -59,6 +52,7 @@ def create_client():
 
 @app.route('/client/<int:client_id>/edit-client', methods=('GET', 'POST'))
 def edit_client(client_id):
+    """Edit client from Client table"""
     cur_client = get_client(client_id)
     form = EditAndDeleteClientForm()
     if request.method == 'GET':
@@ -82,6 +76,7 @@ def edit_client(client_id):
 
 @app.route('/clients')
 def clients():
+    """Select all clients from Client table"""
     page = request.args.get('page', 1, type=int)
     clients = Client.query.paginate(page=page, per_page=20)
     return render_template(
@@ -92,18 +87,9 @@ def clients():
 # Vehicle
 
 
-@app.route('/vehicle/<string:vin_number>')
-def vehicle(vin_number):
-    cur_vehicle = get_vehicle(vin_number)
-    if cur_vehicle is None:
-        return 'Not found', 404
-    return render_template(
-        './vehicle/vehicle.html',
-         vehicle=cur_vehicle)
-
-
 @app.route('/create-vehicle', methods=('GET', 'POST'))
 def create_vehicle():
+    """Insert vehicle into Vehicle table"""
     form = CreateVehicleForm()
     if request.method == 'POST' and form.validate_on_submit():
         new_vehicle = Vehicle()
@@ -119,6 +105,7 @@ def create_vehicle():
 
 @app.route('/vehicle/<string:vin_number>/edit-vehicle', methods=('GET', 'POST'))
 def edit_vehicle(vin_number):
+    """Edit vehicle from Vehicle table"""
     cur_vehicle = get_vehicle(vin_number)
     form = EditAndDeleteVehicleForm()
     if request.method == 'GET':
@@ -147,7 +134,7 @@ def edit_vehicle(vin_number):
 
 @app.route('/vehicles')
 def vehicles():
-    """ Rendering all vehicles from database """
+    """Select all vehicles from Vehicle table"""
     # Pagination
     page = request.args.get('page', 1, type=int)
     vehicles = Vehicle.query.paginate(page=page, per_page=20)
@@ -159,18 +146,9 @@ def vehicles():
 # Parking
 
 
-@app.route('/parking/<int:parking_id>')
-def parking(parking_id):
-    cur_parking = get_parking(parking_id)
-    if cur_parking is None:
-        return 'Not found', 404
-    return render_template(
-        './parking/parking.html',
-        parking=cur_parking)
-
-
 @app.route('/create-parking', methods=('GET', 'POST'))
 def create_parking():
+    """Insert parking into Parking table"""
     form = CreateParkingForm()
     if request.method == 'POST' and form.validate_on_submit():
         new_parking = Parking()
@@ -186,6 +164,7 @@ def create_parking():
 
 @app.route('/parking/<int:parking_id>/edit-parking', methods=('GET', 'POST'))
 def edit_parking(parking_id):
+    """Insert parking into Parking table"""
     cur_parking = get_parking(parking_id)
     form = EditAndDeleteParkingForm()
     if request.method == 'GET':
@@ -212,7 +191,7 @@ def edit_parking(parking_id):
 
 @app.route('/parkings')
 def parkings():
-    """ Rendering parking table from database """
+    """Select all parkings from Parking table"""
     # Pagination
     page = request.args.get('page', 1, type=int)
     parkings = Parking.query.paginate(page=page, per_page=20)
@@ -224,18 +203,9 @@ def parkings():
 # Rent
 
 
-@app.route('/rent/<int:rent_id>')
-def rent(rent_id):
-    cur_rent = get_rent(rent_id)
-    if cur_rent is None:
-        return 'Not found', 404
-    return render_template(
-        './rent/rent.html',
-         rent=cur_rent)
-
-
 @app.route('/create-rent', methods=('GET', 'POST'))
 def create_rent():
+    """Insert rent into Rent table"""
     form = CreateRentForm()
     if request.method == 'POST' and form.validate_on_submit():
         new_rent = Rent()
@@ -251,6 +221,7 @@ def create_rent():
 
 @app.route('/rent/<int:rent_id>/edit-rent', methods=('GET', 'POST'))
 def edit_rent(rent_id):
+    """Edit rent from Rent table"""
     cur_rent = get_rent(rent_id)
     form = EditAndDeleteRentForm()
     if request.method == 'GET':
@@ -279,6 +250,7 @@ def edit_rent(rent_id):
 
 @app.route('/rents')
 def rents():
+    """Select all rents from Rent table"""
     page = request.args.get('page', 1, type=int)
     rents = Rent.query.paginate(page=page, per_page=20)
     return render_template(
@@ -288,4 +260,5 @@ def rents():
 
 @app.route('/')
 def index():
+    """Render index.html template"""
     return render_template('index.html')
