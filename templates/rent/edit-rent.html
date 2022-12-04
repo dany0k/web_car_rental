@@ -26,12 +26,11 @@
                      {{ form.end_date.errors if form.begin_date.errors }}
               </div>
 </div>
+<br>
 <div class="form-group">
        {{ form.submit(class="btn btn-primary") }}
-       <a class="btn btn-primary" href="../../rent-list">Cancel</a>
-       {% if rent.rent_id %}
+       <a class="btn btn-primary" href="../../rents">Cancel</a>
        {{ form.delete(class="btn btn-danger btn-medium") }}
-       {% endif %}
 </div>
 </form>
 </div>
