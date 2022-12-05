@@ -95,6 +95,49 @@ class EditAndDeleteClientForm(FlaskForm):
         ])
 
 
+class VehiclesForm(FlaskForm):
+    select_price = MultiCheckboxField(
+        label='Price',
+        choices=[
+            (1, 'Ascending Price'),
+            (2, 'Descending Price')
+        ])
+    select_condition = MultiCheckboxField(
+        label='Condition',
+        choices=[
+            (1, 'Ascending'),
+            (2, 'Descending')
+        ])
+    serch_brand = StringField(
+        label='Brand'
+    )
+    serch_vin = StringField(
+        label='VIN'
+    )
+
+    submit = SubmitField(label=('Submit'))
+    status_price = 0
+    status_condition = 0
+    status_brand = 0
+    status_vin = 0
+
+
+    def set_status_price(self, val):
+        self.status_price = val
+
+
+    def set_status_condition(self, val):
+        self.status_condition = val
+    
+    
+    def set_status_brand(self, val):
+        self.status_brand = val
+
+
+    def set_status_vin(self, val):
+        self.status_vin = val
+
+
 class CreateVehicleForm(FlaskForm):
     submit = SubmitField(label=('Submit'))
 

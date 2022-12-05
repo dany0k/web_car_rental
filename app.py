@@ -102,6 +102,38 @@ def check_status_surname(selection):
         ClientsForm.set_status_surname(ClientsForm, '1')
 
 
+def check_status_price(selection):
+    if selection == []:
+        VehiclesForm.set_status_price(VehiclesForm, '0')
+    if selection == ['1']:
+        VehiclesForm.set_status_price(VehiclesForm, '1')
+    if selection == ['2']:
+        VehiclesForm.set_status_price(VehiclesForm, '2')
+
+
+def check_status_condition(selection):
+    if selection == []:
+        VehiclesForm.set_status_condition(VehiclesForm, '0')
+    if selection == ['1']:
+        VehiclesForm.set_status_condition(VehiclesForm, '1')
+    if selection == ['2']:
+        VehiclesForm.set_status_condition(VehiclesForm, '2')
+
+
+def check_status_brand(selection):
+    if selection == '':
+        VehiclesForm.set_status_brand(VehiclesForm, '0')
+    else:
+        VehiclesForm.set_status_brand(VehiclesForm, '1')
+
+
+def check_status_vin(selection):
+    if selection == '':
+        VehiclesForm.set_status_vin(VehiclesForm, '0')
+    else:
+        VehiclesForm.set_status_vin(VehiclesForm, '1')
+
+
 
 
 # Clients
@@ -251,15 +283,54 @@ def edit_vehicle(vin_number):
         form=form)
 
 
-@app.route('/vehicles')
+@app.route('/vehicles', methods=('GET', 'POST'))
 def vehicles():
     """Select all vehicles from Vehicle table"""
     # Pagination
-    page = request.args.get('page', 1, type=int)
-    vehicles = Vehicle.query.paginate(page=page, per_page=20)
+    form=VehiclesForm()
+
+    page = request.args.get('page', 1, type=int) 
+    vehicles = Vehicle.query
+    
+    select_price = form.select_price.data
+    select_condition = form.select_condition.data
+    serch_brand = form.serch_brand.data
+    serch_vin = form.serch_vin.data  
+    if request.method == 'POST':  
+        page = 1
+        check_status_price(select_price)
+        check_status_condition(select_condition)
+        check_status_brand(serch_brand)
+        check_status_vin(serch_vin)
+        
+    if VehiclesForm.status_price == '0':
+        form.select_price.data = []
+    if VehiclesForm.status_price == '1':
+        vehicles = Vehicle.query
+        form.select_price.data = ['1']
+    if VehiclesForm.status_price == '2':
+        vehicles = Vehicle.query.order_by(desc(Vehicle.price))
+        form.select_price.data = ['2']
+
+    if VehiclesForm.status_condition == '0':
+        form.select_condition.data = []
+    if VehiclesForm.status_condition == '1':
+        vehicles = vehicles.order_by(Vehicle.condition)
+        form.select_condition.data = ['1']
+    if VehiclesForm.status_condition == '2':
+        vehicles = vehicles.order_by(desc(Vehicle.condition))
+        form.select_condition.data = ['2']
+
+    if serch_brand:
+        vehicles = vehicles.filter(Vehicle.brand == serch_brand)
+
+    if serch_vin:
+        vehicles = vehicles.filter(Vehicle.vin_number == serch_vin)
     return render_template(
         './vehicle/vehicles.html',
-        vehicles=vehicles)
+        vehicles=vehicles.paginate(page=page, per_page=20),
+        form=form
+        )
 
 
 # Parking
