@@ -154,15 +154,18 @@ def clients():
 
     page = request.args.get('page', 1, type=int) 
     clients = Client.query
-
+    
     select_order = form.select_order.data
     select_violation = form.select_violation.data
     serch_name = form.serch_name.data
-    serch_surname = form.serch_surname.data
-    
-    if request.method == 'POST':
+    serch_surname = form.serch_surname.data  
+    if request.method == 'POST':  
+        page = 1
         check_status_order(select_order)
         check_status_violation(select_violation)
+        check_status_name(serch_name)
+        check_status_surname(serch_surname)
+        
     if ClientsForm.status_order == '0':
         form.select_order.data = []
     if ClientsForm.status_order == '1':
@@ -181,10 +184,10 @@ def clients():
         clients = clients.order_by(desc(Client.violation))
         form.select_violation.data = ['2']
 
-    if len(str(serch_name)) > 0:
+    if serch_name:
         clients = clients.filter(Client.firstname == serch_name)
 
-    if len(str(serch_surname)) > 0:
+    if serch_surname:
         clients = clients.filter(Client.surname == serch_surname)
  
     return render_template(
