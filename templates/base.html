@@ -25,6 +25,7 @@
                 <li><a href="{{url_for('vehicles')}}">Vehicles</a></li>
                 <li><a href="{{url_for('parkings')}}">Parking</a></li>
                 <li><a href="{{url_for('rents')}}">Rent</a></li>
+                <li><a href="{{url_for('statistics')}}">Statistics</a></li>
             </ul>
         </div>
         <div class="content-wrapper">
@@ -40,7 +41,6 @@
                 </div>
                 <div class="filters">
                     {% block filters %}
-                    <h3>Filters</h3>
                     <ul class="skills">
                     </ul>
                     {% endblock %}

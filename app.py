@@ -555,6 +555,26 @@ def rents():
         form=form)
 
 
+@app.route('/statistics')
+def statistics():
+    clients_amount = count_rows_in_table(Client)
+    vehicles_amount = count_rows_in_table(Vehicle)
+    broken_cars = db.session.query(Vehicle)\
+        .filter(Vehicle.condition == '1').count()
+    working_cars = db.session.query(Vehicle)\
+        .filter(Vehicle.condition == '0').count()
+    parkings_amount = count_rows_in_table(Parking)
+    rents_amount = count_rows_in_table(Rent)
+    return render_template(
+        'statistics.html',
+        clients_amount=clients_amount,
+        vehicles_amount=vehicles_amount,
+        parkings_amount=parkings_amount,
+        rents_amount=rents_amount,
+        broken_cars=broken_cars,
+        working_cars=working_cars)
+
+
 @app.route('/')
 def index():
     """Render index.html template"""
