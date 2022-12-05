@@ -246,6 +246,41 @@ class EditAndDeleteParkingForm(FlaskForm):
         ])
 
 
+class RentsForm(FlaskForm):
+    select_rent = MultiCheckboxField(
+        label='Rent',
+        choices=[
+            (1, 'Ascending ID'),
+            (2, 'Descending ID')
+        ])
+    select_client_id = MultiCheckboxField(
+        label='Client ID',
+        choices=[
+            (1, 'Ascending'),
+            (2, 'Descending')
+        ])
+    serch_vin = StringField(
+        label='VIN'
+    )
+
+    submit = SubmitField(label=('Submit'))
+    status_rent = 0
+    status_client_id = 0
+    status_vin = 0
+
+
+    def set_status_rent(self, val):
+        self.status_rent = val
+
+
+    def set_status_client_id(self, val):
+        self.status_client_id = val
+    
+    
+    def set_status_rent_vin(self, val):
+        self.status_vin = val
+
+
 class CreateRentForm(FlaskForm):
     submit = SubmitField(label=('Submit'))
 

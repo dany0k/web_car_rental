@@ -148,6 +148,33 @@ def check_status_parking(selection):
         ParkingsForm.set_status_parking(ParkingsForm, '1')
     if selection == ['2']:
         ParkingsForm.set_status_parking(ParkingsForm, '2')
+
+
+def check_status_rent(selection):
+    if selection == []:
+        RentsForm.set_status_rent(RentsForm, '0')
+    if selection == ['1']:
+        RentsForm.set_status_rent(RentsForm, '1')
+    if selection == ['2']:
+        RentsForm.set_status_rent(RentsForm, '2')
+
+
+def check_status_client_id(selection):
+    if selection == []:
+        RentsForm.set_status_client_id(RentsForm, '0')
+    if selection == ['1']:
+        RentsForm.set_status_client_id(RentsForm, '1')
+    if selection == ['2']:
+        RentsForm.set_status_client_id(RentsForm, '2')
+
+
+def check_status_rent_vin(selection):
+    if selection == '':
+        RentsForm.set_status_rent_vin(RentsForm, '0')
+    else:
+        RentsForm.set_status_rent_vin(RentsForm, '1')
+
+
 # Clients
 
 
@@ -485,14 +512,47 @@ def edit_rent(rent_id):
         form=form)
 
 
-@app.route('/rents')
+@app.route('/rents', methods=('GET', 'POST'))
 def rents():
     """Select all rents from Rent table"""
-    page = request.args.get('page', 1, type=int)
-    rents = Rent.query.paginate(page=page, per_page=20)
+    form=RentsForm()
+
+    page = request.args.get('page', 1, type=int) 
+    rents = Rent.query
+    
+    select_rent = form.select_rent.data
+    select_client_id = form.select_client_id.data
+    serch_vin = form.serch_vin.data
+    if request.method == 'POST':  
+        page = 1
+        check_status_rent(select_rent)
+        check_status_client_id(select_client_id)
+        check_status_vin(serch_vin)
+        
+    if RentsForm.status_rent == '0':
+        form.select_rent.data = []
+    if RentsForm.status_rent == '1':
+        rents = Rent.query
+        form.select_rent.data = ['1']
+    if RentsForm.status_rent == '2':
+        rents = Rent.query.order_by(desc(Rent.rent_id))
+        form.select_rent.data = ['2']
+
+    if RentsForm.status_client_id == '0':
+        form.select_client_id.data = []
+    if RentsForm.status_client_id == '1':
+        rents = rents.order_by(Rent.client_id)
+        form.select_client_id.data = ['1']
+    if RentsForm.status_client_id == '2':
+        rents = rents.order_by(desc(Rent.client_id))
+        form.select_client_id.data = ['2']
+
+    if serch_vin:
+        rents = rents.filter(Rent.vin_number == serch_vin)
     return render_template(
         './rent/rents.html',
-        rents=rents)
+        rents=rents.paginate(page=page, per_page=20),
+        form=form)
 
 
 @app.route('/')
