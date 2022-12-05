@@ -134,8 +134,20 @@ def check_status_vin(selection):
         VehiclesForm.set_status_vin(VehiclesForm, '1')
 
 
+def check_status_parking_vin(selection):
+    if selection == '':
+        ParkingsForm.set_status_parking_vin(ParkingsForm, '0')
+    else:
+        ParkingsForm.set_status_parking_vin(ParkingsForm, '1')
 
 
+def check_status_parking(selection):
+    if selection == []:
+        ParkingsForm.set_status_parking(ParkingsForm, '0')
+    if selection == ['1']:
+        ParkingsForm.set_status_parking(ParkingsForm, '1')
+    if selection == ['2']:
+        ParkingsForm.set_status_parking(ParkingsForm, '2')
 # Clients
 
 
@@ -382,15 +394,36 @@ def edit_parking(parking_id):
         form=form)
 
 
-@app.route('/parkings')
+@app.route('/parkings', methods=('GET', 'POST'))
 def parkings():
     """Select all parkings from Parking table"""
-    # Pagination
-    page = request.args.get('page', 1, type=int)
-    parkings = Parking.query.paginate(page=page, per_page=20)
+    form=ParkingsForm()
+
+    page = request.args.get('page', 1, type=int) 
+    parkings = Parking.query
+    
+    select_parking = form.select_parking.data
+    serch_vin = form.serch_vin.data  
+    if request.method == 'POST':  
+        page = 1
+        check_status_parking(select_parking)
+        check_status_vin(serch_vin)
+        
+    if ParkingsForm.status_parking == '0':
+        form.select_parking.data = []
+    if ParkingsForm.status_parking == '1':
+        parkings = Parking.query
+        form.select_parking.data = ['1']
+    if ParkingsForm.status_parking == '2':
+        parkings = Parking.query.order_by(desc(Parking.parking_id))
+        form.select_parking.data = ['2']
+
+    if serch_vin:
+        parkings = parkings.filter(Parking.vin_number == serch_vin)
     return render_template(
         './parking/parkings.html',
-        parkings=parkings)
+        parkings=parkings.paginate(page=page, per_page=20),
+        form=form)
 
 
 # Rent

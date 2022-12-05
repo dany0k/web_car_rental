@@ -196,6 +196,31 @@ class EditAndDeleteVehicleForm(FlaskForm):
         )    
 
 
+class ParkingsForm(FlaskForm):
+    select_parking = MultiCheckboxField(
+        label='ID',
+        choices=[
+            (1, 'Ascending ID'),
+            (2, 'Descending ID')
+        ])
+
+    serch_vin = StringField(
+        label='VIN'
+    )
+
+    submit = SubmitField(label=('Submit'))
+    status_parking = 0
+    status_vin = 0
+
+
+    def set_status_parking(self, val):
+        self.status_parking = val
+
+
+    def set_status_parking_vin(self, val):
+        self.status_vin = val
+
+
 class CreateParkingForm(FlaskForm):
     submit = SubmitField(label=('Submit'))
 
