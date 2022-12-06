@@ -175,6 +175,13 @@ def check_status_rent_vin(selection):
         RentsForm.set_status_rent_vin(RentsForm, '1')
 
 
+def check_status_serch_client_id(selection):
+    if selection == '':
+        RentsForm.set_status_serch_client_id(RentsForm, '0')
+    else:
+        RentsForm.set_status_serch_client_id(RentsForm, '1')
+
+
 # Clients
 
 
@@ -523,11 +530,13 @@ def rents():
     select_rent = form.select_rent.data
     select_client_id = form.select_client_id.data
     serch_vin = form.serch_vin.data
+    serch_client_id = form.serch_client_id.data
     if request.method == 'POST':  
         page = 1
         check_status_rent(select_rent)
         check_status_client_id(select_client_id)
-        check_status_vin(serch_vin)
+        check_status_rent_vin(serch_vin)
+        check_status_serch_client_id(serch_client_id)
         
     if RentsForm.status_rent == '0':
         form.select_rent.data = []
@@ -547,6 +556,8 @@ def rents():
         rents = rents.order_by(desc(Rent.client_id))
         form.select_client_id.data = ['2']
 
+    if serch_client_id:
+        rents = rents.filter(Rent.client_id == serch_client_id)
     if serch_vin:
         rents = rents.filter(Rent.vin_number == serch_vin)
     return render_template(

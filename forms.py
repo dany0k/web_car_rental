@@ -268,10 +268,15 @@ class RentsForm(FlaskForm):
     serch_vin = StringField(
         label='VIN'
     )
+    
+    serch_client_id = StringField(
+        label='Client ID'
+    )
 
     submit = SubmitField(label=('Submit'))
     status_rent = 0
     status_client_id = 0
+    status_serch_client_id = 0
     status_vin = 0
 
 
@@ -285,6 +290,10 @@ class RentsForm(FlaskForm):
     
     def set_status_rent_vin(self, val):
         self.status_vin = val
+    
+    
+    def set_status_serch_client_id(self, val):
+        self.status_serch_client_id = val
 
 
 class CreateRentForm(FlaskForm):
