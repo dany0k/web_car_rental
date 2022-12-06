@@ -2,8 +2,8 @@ from app_config import app, db
 from model import *
 from forms import *
 from flask import render_template, request, flash, redirect, url_for
-from sqlalchemy import exc, desc
-
+from sqlalchemy import exc, desc, func
+import re
 
 def get_all_items_from_table(Table):
     """Select all items from DB`s table"""
@@ -565,6 +565,12 @@ def statistics():
         .filter(Vehicle.condition == '0').count()
     parkings_amount = count_rows_in_table(Parking)
     rents_amount = count_rows_in_table(Rent)
+    best_client = db.session.query(Rent.client_id, func.count(Rent.vin_number))\
+        .group_by(Rent.client_id)\
+            .order_by((desc(func.count(Rent.vin_number))))\
+                .first()
+    sentence = str(best_client)
+    s = [int(s) for s in re.findall(r'-?\d+\.?\d*', sentence)]
     return render_template(
         'statistics.html',
         clients_amount=clients_amount,
@@ -572,7 +578,9 @@ def statistics():
         parkings_amount=parkings_amount,
         rents_amount=rents_amount,
         broken_cars=broken_cars,
-        working_cars=working_cars)
+        working_cars=working_cars,
+        best_client=s[0],
+        best_client_rents_amount=s[1])
 
 
 @app.route('/')
