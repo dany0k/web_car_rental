@@ -2,10 +2,14 @@
 Styles
 */
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;700&display=swap');
+
 h1 {
+    font: 2em Arial, sans-serif;
     font-size: 30px;
     font-weight: bold;
     margin-bottom: 10px;
+    color: #343A40;
 }
 
 h3 {
@@ -43,7 +47,8 @@ h10 {
 }
 
 p {
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: 'Roboto', sans-serif;
+    font-size: large;
     margin-left: 10px;
     text-indent: 20px;
 }
@@ -67,7 +72,8 @@ body {
 
 .my-header {
     display: flex;
-    height: 150px;
+    height: 70px;
+    margin-bottom: 3px;
 }
 
 .my-title-block {
@@ -83,8 +89,8 @@ body {
 
 .stroke {
     font: 2em Arial, sans-serif;
-    -webkit-text-stroke-width: 2px;
-    -webkit-text-stroke-color: black;
+    /* -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-color: black; */
 }
 
 .nav-pane ul {
@@ -142,6 +148,7 @@ body {
     width: 70%;
     padding: 20px;
     line-height: 20px;
+    margin-bottom: 3px;
 }
 
 .sidebar {
@@ -150,6 +157,7 @@ body {
     width: 10%;
     height: 1000px;
     padding: 20px;
+    margin-bottom: 3px;
 }
 
 .skills li{
@@ -186,7 +194,6 @@ Contackt page
 
 .header-con-pg {    
     border: 2px solid gray;
-    background-color: rgb(233, 233, 233);
     display: flex;
     height: 150px;  
 }
@@ -299,8 +306,17 @@ Contackt page
 }
 .pagination-page-info b {
     color: black;
-    background: #6aa6ed;
+    background: #313335;
     padding-left: 2px;
     padding: .1em .25em;
     font-size: 150%;
 }
+
+.zebra {
+    font-size: large;
+    list-style: none;
+    border-left: 10px solid #3d3838;
+    padding: 0;
+    font-family: "Lucida Sans";
+  }
+.zebra li {padding: 10px;}
