@@ -259,6 +259,12 @@ class RentsForm(FlaskForm):
             (1, 'Ascending'),
             (2, 'Descending')
         ])
+    select_date = MultiCheckboxField(
+        label='Client ID',
+        choices=[
+            (1, 'New'),
+            (2, 'Old')
+        ])
     serch_vin = StringField(
         label='VIN'
     )

@@ -1,12 +1,34 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Statistics</h2>
-<p>Clients Amount: {{ clients_amount }}</p>
-<p>Vehicles Amount: {{ vehicles_amount }}</p>
-<p>Which: </p>
-<p>Broken: {{ broken_cars }}</p>
-<p>Serviceable: {{ working_cars }}</p>
-<p>Parking Amount: {{ parkings_amount }}</p>
-<p>Rents was offered: {{ rents_amount }}</p>
+<ul class="zebra">
+    <li>
+        <p>Clients Amount: {{ clients_amount }}</p>
+        <ul class="zebra">
+            <li>
+                <p>The most popular client: {{ best_client }} ID</p>
+            </li>
+            <li>
+                <p>The most popular clients Rent Amount: {{ best_client_rents_amount }}</p>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <p><b>Vehicles Amount:</b> {{ vehicles_amount }}</p>
+        <ul class="zebra">
+            <li>
+                <p>Broken: {{ broken_cars }}</p>
+            </li>
+            <li>
+                <p>Serviceable: {{ working_cars }}</p>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <p>Parking Amount: {{ parkings_amount }}</p>
+    </li>
+    <li>
+        <p>Rents was offered: {{ rents_amount }}</p>
+    </li>
+</ul>
 {% endblock %}
-
