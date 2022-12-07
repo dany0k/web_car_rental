@@ -16,6 +16,12 @@ class Vehicle(db.Model):
     price = db.Column('price', db.INTEGER) 
     condition = db.Column('condition', db.INTEGER)
 
+    def get_vin(self):
+        return self.vin_number
+
+    def get_condition(self):
+        return self.condition
+
 
 class Parking(db.Model):
     __tablename__ = 'parking'
@@ -30,3 +36,24 @@ class Rent(db.Model):
     vin_number = db.Column(db.ForeignKey('vehicle.vin_number'))
     begin_date = db.Column('begin_date', db.String(50), unique=False)
     end_date = db.Column('end_date', db.String(50), unique=False)
+
+
+    def get_end_date(self):
+        return str(self.end_date)
+
+
+def get_client_id(self):
+    return str(self.client_id)
+
+
+def get_vin_number(self):
+    return str(self.vin_number)
+
+
+def get_rent_id(self):
+    return str(self.rent_id)
+
+
+def get_parking_id(self):
+    return str(self.parking_id)
+    

@@ -5,10 +5,6 @@ from flask import render_template, request, flash, redirect, url_for
 from sqlalchemy import exc, desc, func
 import re
 
-def get_all_items_from_table(Table):
-    """Select all items from DB`s table"""
-    return db.session.query(Table).one_or_none()
-
 
 def count_rows_in_table(Table):
     """Counts all rows in table"""
@@ -64,6 +60,32 @@ def check_status_string_field(selection, Form, func):
         func(Form, '0')
     else:
         func(Form, '1')
+
+
+def split_str(sentence):
+    """ Remove rudinant chars in string"""
+    sentence = str(sentence)
+    s = [int(s) for s in re.findall(r'-?\d+\.?\d*', sentence)]
+    return s
+
+
+def get_best_client():
+    """Method returns best client ID, Name, Surname, Rents Amount """
+    best_client = db.session.query(Rent.client_id, func.count(Rent.vin_number))\
+    .group_by(Rent.client_id)\
+        .order_by((desc(func.count(Rent.vin_number))))\
+            .first()
+    best_client_list = split_str(best_client)
+    best_client_name = db.session.query(Client.firstname)\
+        .filter(Client.client_id == best_client_list[0]).one_or_none()
+    best_client_surname = db.session.query(Client.surname)\
+        .filter(Client.client_id == best_client_list[0]).one_or_none()    
+    best_client_name="".join(c for c in str(best_client_name) if c.isalpha())
+    best_client_surname="".join(c for c in str(best_client_surname) if c.isalpha())
+    best_client_list.append(best_client_name)
+    best_client_list.append(best_client_surname)
+
+    return best_client_list
 
 
 # Clients
@@ -174,6 +196,10 @@ def create_vehicle():
             new_vehicle = Vehicle()
             form.populate_obj(new_vehicle)
             db.session.add(new_vehicle)
+            db.session.commit()
+            new_parking = Parking()
+            form.populate_obj(new_parking)
+            db.session.add(new_parking)
             db.session.commit()
             return redirect(url_for('vehicles'))
         except exc.IntegrityError:
@@ -460,31 +486,6 @@ def rents():
         './rent/rents.html',
         rents=rents.paginate(page=page, per_page=20),
         form=form)
-
-
-def split_str(sentence):
-    sentence = str(sentence)
-    s = [int(s) for s in re.findall(r'-?\d+\.?\d*', sentence)]
-    return s
-
-
-def get_best_client():
-    """Method returns best client ID, Name, Surname, Rents Amount """
-    best_client = db.session.query(Rent.client_id, func.count(Rent.vin_number))\
-    .group_by(Rent.client_id)\
-        .order_by((desc(func.count(Rent.vin_number))))\
-            .first()
-    best_client_list = split_str(best_client)
-    best_client_name = db.session.query(Client.firstname)\
-        .filter(Client.client_id == best_client_list[0]).one_or_none()
-    best_client_surname = db.session.query(Client.surname)\
-        .filter(Client.client_id == best_client_list[0]).one_or_none()    
-    best_client_name="".join(c for c in str(best_client_name) if c.isalpha())
-    best_client_surname="".join(c for c in str(best_client_surname) if c.isalpha())
-    best_client_list.append(best_client_name)
-    best_client_list.append(best_client_surname)
-
-    return best_client_list
 
 
 @app.route('/statistics')
