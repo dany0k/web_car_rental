@@ -15,6 +15,7 @@ class Config():
 
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_ECHO"] = True
 app.config.from_object(Config())
 mod = Blueprint('app', __name__)
 db = SQLAlchemy(app=app, session_options={'autoflush': False})
