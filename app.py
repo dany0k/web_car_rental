@@ -15,30 +15,6 @@ def count_rows_in_table(Table):
     return db.session.query(Table).count()
 
 
-def get_client(client_id):
-    """Select client from Client table by its id"""
-    return db.session.query(Client)\
-        .filter(Client.client_id == int(client_id)).one_or_none()
-
-
-def get_vehicle(vin_number):
-    """Select vehicle from Vehicle table by its id"""
-    return db.session.query(Vehicle)\
-        .filter(Vehicle.vin_number == vin_number).one_or_none()
-
-
-def get_parking(parking_id):
-    """Select parking from Parking table by its id"""
-    return db.session.query(Parking)\
-        .filter(Parking.parking_id == int(parking_id)).one_or_none()
-
-
-def get_rent(rent_id):
-    """Select rent from Rent table by its id"""
-    return db.session.query(Rent)\
-        .filter(Rent.rent_id == int(rent_id)).one_or_none()
-
-
 def can_rent(vin_number, client_id):
     """Method check can user take the car (by VIN) in rent"""
     is_rented = db.session.query(Rent)\
@@ -62,6 +38,8 @@ def can_rent(vin_number, client_id):
 
     
 def is_vin_exists(vin_number):
+    """ Method returns False if there no such vin in table"""
+    """ And returns True if vin exists"""
     vins = db.session.query(Vehicle)\
         .filter(Vehicle.vin_number == vin_number).one_or_none()
     if vins == None:
@@ -70,116 +48,22 @@ def is_vin_exists(vin_number):
         return True
 
 
-def check_status_order(selection):
+def check_status_checkbox(selection, Form, func):
+    """Method checks what is Form status from checkbox"""
     if selection == []:
-        ClientsForm.set_status_order(ClientsForm, '0')
+        func(Form, '0')
     if selection == ['1']:
-        ClientsForm.set_status_order(ClientsForm, '1')
+        func(Form, '1')
     if selection == ['2']:
-        ClientsForm.set_status_order(ClientsForm, '2')
+        func(Form, '2')
 
 
-def check_status_violation(selection):
-    if selection == []:
-        ClientsForm.set_status_violation(ClientsForm, '0')
-    if selection == ['1']:
-        ClientsForm.set_status_violation(ClientsForm, '1')
-    if selection == ['2']:
-        ClientsForm.set_status_violation(ClientsForm, '2')
-
-
-def check_status_name(selection):
+def check_status_string_field(selection, Form, func):
+    """Method checks what is Form status from StringField"""
     if selection == '':
-        ClientsForm.set_status_name(ClientsForm, '0')
+        func(Form, '0')
     else:
-        ClientsForm.set_status_name(ClientsForm, '1')
-
-
-def check_status_surname(selection):
-    if selection == '':
-        ClientsForm.set_status_surname(ClientsForm, '0')
-    else:
-        ClientsForm.set_status_surname(ClientsForm, '1')
-
-
-def check_status_price(selection):
-    if selection == []:
-        VehiclesForm.set_status_price(VehiclesForm, '0')
-    if selection == ['1']:
-        VehiclesForm.set_status_price(VehiclesForm, '1')
-    if selection == ['2']:
-        VehiclesForm.set_status_price(VehiclesForm, '2')
-
-
-def check_status_condition(selection):
-    if selection == []:
-        VehiclesForm.set_status_condition(VehiclesForm, '0')
-    if selection == ['1']:
-        VehiclesForm.set_status_condition(VehiclesForm, '1')
-    if selection == ['2']:
-        VehiclesForm.set_status_condition(VehiclesForm, '2')
-
-
-def check_status_brand(selection):
-    if selection == '':
-        VehiclesForm.set_status_brand(VehiclesForm, '0')
-    else:
-        VehiclesForm.set_status_brand(VehiclesForm, '1')
-
-
-def check_status_vin(selection):
-    if selection == '':
-        VehiclesForm.set_status_vin(VehiclesForm, '0')
-    else:
-        VehiclesForm.set_status_vin(VehiclesForm, '1')
-
-
-def check_status_parking_vin(selection):
-    if selection == '':
-        ParkingsForm.set_status_parking_vin(ParkingsForm, '0')
-    else:
-        ParkingsForm.set_status_parking_vin(ParkingsForm, '1')
-
-
-def check_status_parking(selection):
-    if selection == []:
-        ParkingsForm.set_status_parking(ParkingsForm, '0')
-    if selection == ['1']:
-        ParkingsForm.set_status_parking(ParkingsForm, '1')
-    if selection == ['2']:
-        ParkingsForm.set_status_parking(ParkingsForm, '2')
-
-
-def check_status_rent(selection):
-    if selection == []:
-        RentsForm.set_status_rent(RentsForm, '0')
-    if selection == ['1']:
-        RentsForm.set_status_rent(RentsForm, '1')
-    if selection == ['2']:
-        RentsForm.set_status_rent(RentsForm, '2')
-
-
-def check_status_client_id(selection):
-    if selection == []:
-        RentsForm.set_status_client_id(RentsForm, '0')
-    if selection == ['1']:
-        RentsForm.set_status_client_id(RentsForm, '1')
-    if selection == ['2']:
-        RentsForm.set_status_client_id(RentsForm, '2')
-
-
-def check_status_rent_vin(selection):
-    if selection == '':
-        RentsForm.set_status_rent_vin(RentsForm, '0')
-    else:
-        RentsForm.set_status_rent_vin(RentsForm, '1')
-
-
-def check_status_serch_client_id(selection):
-    if selection == '':
-        RentsForm.set_status_serch_client_id(RentsForm, '0')
-    else:
-        RentsForm.set_status_serch_client_id(RentsForm, '1')
+        func(Form, '1')
 
 
 # Clients
@@ -204,12 +88,15 @@ def create_client():
 @app.route('/client/<int:client_id>/edit-client', methods=('GET', 'POST'))
 def edit_client(client_id):
     """Edit client from Client table"""
-    cur_client = get_client(client_id)
+    cur_client = db.session.query(Client)\
+        .filter(Client.client_id == client_id).first()
     form = EditAndDeleteClientForm()
+    # Filling form from DB using GET request
     if request.method == 'GET':
         form.firstname.data = cur_client.firstname
         form.surname.data = cur_client.surname
         form.violation.data = cur_client.violation
+    # Filling DB from form using POST request
     if request.method == 'POST' and form.validate_on_submit():
         form.populate_obj(cur_client)
         if form.delete.data:
@@ -239,11 +126,12 @@ def clients():
     serch_surname = form.serch_surname.data  
     if request.method == 'POST':  
         page = 1
-        check_status_order(select_order)
-        check_status_violation(select_violation)
-        check_status_name(serch_name)
-        check_status_surname(serch_surname)
-        
+        # Check all statuses for filtering
+        check_status_checkbox(select_order, ClientsForm, ClientsForm.set_status_order)
+        check_status_checkbox(select_violation, ClientsForm, ClientsForm.set_status_violation)
+        check_status_string_field(serch_name, ClientsForm, ClientsForm.set_status_name)
+        check_status_string_field(serch_surname, ClientsForm, ClientsForm.set_status_surname)
+
     if ClientsForm.status_order == '0':
         form.select_order.data = []
     if ClientsForm.status_order == '1':
@@ -300,14 +188,17 @@ def create_vehicle():
 @app.route('/vehicle/<string:vin_number>/edit-vehicle', methods=('GET', 'POST'))
 def edit_vehicle(vin_number):
     """Edit vehicle from Vehicle table"""
-    cur_vehicle = get_vehicle(vin_number)
+    cur_vehicle = db.session.query(Vehicle)\
+        .filter(Vehicle.vin_number == vin_number).first()
     form = EditAndDeleteVehicleForm()
+    # Filling form from DB using GET request
     if request.method == 'GET':
         form.vin_number.data = cur_vehicle.vin_number
         form.brand.data = cur_vehicle.brand
         form.price.data = cur_vehicle.price
         if cur_vehicle.condition == 1:
             form.condition.default = '1'
+    # Filling DB from form using POST request
     if request.method == 'POST' and form.validate_on_submit():
         form.populate_obj(cur_vehicle)
         if form.delete.data:
@@ -332,7 +223,6 @@ def edit_vehicle(vin_number):
 @app.route('/vehicles', methods=('GET', 'POST'))
 def vehicles():
     """Select all vehicles from Vehicle table"""
-    # Pagination
     form=VehiclesForm()
 
     page = request.args.get('page', 1, type=int) 
@@ -344,10 +234,10 @@ def vehicles():
     serch_vin = form.serch_vin.data  
     if request.method == 'POST':  
         page = 1
-        check_status_price(select_price)
-        check_status_condition(select_condition)
-        check_status_brand(serch_brand)
-        check_status_vin(serch_vin)
+        check_status_checkbox(select_price, VehiclesForm, VehiclesForm.set_status_price)
+        check_status_checkbox(select_condition, VehiclesForm, VehiclesForm.set_status_condition)
+        check_status_string_field(serch_brand, VehiclesForm, VehiclesForm.set_status_brand)
+        check_status_string_field(serch_vin, VehiclesForm, VehiclesForm.set_status_vin)
         
     if VehiclesForm.status_price == '0':
         form.select_price.data = []
@@ -404,10 +294,13 @@ def create_parking():
 @app.route('/parking/<int:parking_id>/edit-parking', methods=('GET', 'POST'))
 def edit_parking(parking_id):
     """Insert parking into Parking table"""
-    cur_parking = get_parking(parking_id)
+    cur_parking = db.session.query(Parking)\
+        .filter(Parking.parking_id == parking_id).first()
     form = EditAndDeleteParkingForm()
+    # Filling form from DB using GET request
     if request.method == 'GET':
         form.vin_number.data = cur_parking.vin_number
+    # Filling DB from form using POST request
     if request.method == 'POST' and form.validate_on_submit():
         vin_number = form.vin_number.data
         form.populate_obj(cur_parking)
@@ -440,8 +333,8 @@ def parkings():
     serch_vin = form.serch_vin.data  
     if request.method == 'POST':  
         page = 1
-        check_status_parking(select_parking)
-        check_status_vin(serch_vin)
+        check_status_checkbox(select_parking, ParkingsForm, ParkingsForm.set_status_parking)
+        check_status_string_field(serch_vin, ParkingsForm, ParkingsForm.set_status_parking_vin)
         
     if ParkingsForm.status_parking == '0':
         form.select_parking.data = []
@@ -493,13 +386,16 @@ def create_rent():
 @app.route('/rent/<int:rent_id>/edit-rent', methods=('GET', 'POST'))
 def edit_rent(rent_id):
     """Edit rent from Rent table"""
-    cur_rent = get_rent(rent_id)
+    cur_rent = db.session.query(Rent)\
+        .filter(Rent.rent_id == rent_id).first()
     form = EditAndDeleteRentForm()
+    # Filling form from DB using GET request
     if request.method == 'GET':
         form.client_id.data = cur_rent.client_id
         form.vin_number.data = cur_rent.vin_number
         form.begin_date.data = cur_rent.begin_date
         form.end_date.data = cur_rent.end_date
+    # Filling DB from form using POST request
     if request.method == 'POST' and form.validate_on_submit():
         form.populate_obj(cur_rent)
         if form.delete.data:
@@ -533,10 +429,10 @@ def rents():
     serch_client_id = form.serch_client_id.data
     if request.method == 'POST':  
         page = 1
-        check_status_rent(select_rent)
-        check_status_client_id(select_client_id)
-        check_status_rent_vin(serch_vin)
-        check_status_serch_client_id(serch_client_id)
+        check_status_checkbox(select_rent, RentsForm, RentsForm.set_status_rent)
+        check_status_checkbox(select_client_id, RentsForm, RentsForm.set_status_client_id)
+        check_status_string_field(serch_vin, RentsForm, RentsForm.set_status_rent_vin)
+        check_status_string_field(serch_client_id, RentsForm, RentsForm.set_status_serch_client_id)
         
     if RentsForm.status_rent == '0':
         form.select_rent.data = []
@@ -566,6 +462,31 @@ def rents():
         form=form)
 
 
+def split_str(sentence):
+    sentence = str(sentence)
+    s = [int(s) for s in re.findall(r'-?\d+\.?\d*', sentence)]
+    return s
+
+
+def get_best_client():
+    """Method returns best client ID, Name, Surname, Rents Amount """
+    best_client = db.session.query(Rent.client_id, func.count(Rent.vin_number))\
+    .group_by(Rent.client_id)\
+        .order_by((desc(func.count(Rent.vin_number))))\
+            .first()
+    best_client_list = split_str(best_client)
+    best_client_name = db.session.query(Client.firstname)\
+        .filter(Client.client_id == best_client_list[0]).one_or_none()
+    best_client_surname = db.session.query(Client.surname)\
+        .filter(Client.client_id == best_client_list[0]).one_or_none()    
+    best_client_name="".join(c for c in str(best_client_name) if c.isalpha())
+    best_client_surname="".join(c for c in str(best_client_surname) if c.isalpha())
+    best_client_list.append(best_client_name)
+    best_client_list.append(best_client_surname)
+
+    return best_client_list
+
+
 @app.route('/statistics')
 def statistics():
     clients_amount = count_rows_in_table(Client)
@@ -576,22 +497,23 @@ def statistics():
         .filter(Vehicle.condition == '0').count()
     parkings_amount = count_rows_in_table(Parking)
     rents_amount = count_rows_in_table(Rent)
-    best_client = db.session.query(Rent.client_id, func.count(Rent.vin_number))\
-        .group_by(Rent.client_id)\
-            .order_by((desc(func.count(Rent.vin_number))))\
-                .first()
-    sentence = str(best_client)
-    s = [int(s) for s in re.findall(r'-?\d+\.?\d*', sentence)]
+    best_client = get_best_client()
+    
+    context = {
+        'clients_amount' : clients_amount,
+        'vehicles_amount' : vehicles_amount,
+        'parkings_amount' : parkings_amount,
+        'rents_amount' : rents_amount,
+        'broken_cars' : broken_cars,
+        'working_cars' : working_cars,
+        'best_client_id' : best_client[0],
+        'best_client_rents_amount' : best_client[1],
+        'best_client_name' : best_client[2],
+        'best_client_surname' : best_client[3]
+    }
+
     return render_template(
-        'statistics.html',
-        clients_amount=clients_amount,
-        vehicles_amount=vehicles_amount,
-        parkings_amount=parkings_amount,
-        rents_amount=rents_amount,
-        broken_cars=broken_cars,
-        working_cars=working_cars,
-        best_client=s[0],
-        best_client_rents_amount=s[1])
+        'statistics.html', **context)
 
 
 @app.route('/')

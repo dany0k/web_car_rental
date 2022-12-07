@@ -10,16 +10,16 @@ class MultiCheckboxField(SelectMultipleField):
 
 class ClientsForm(FlaskForm):
     select_order = MultiCheckboxField(
-        label='ID Order',
+        label='Client ID',
         choices=[
-            (1, 'Ascending ID'),
-            (2, 'Descending ID')
+            (1, 'Low to high'),
+            (2, 'High to low')
         ])
     select_violation = MultiCheckboxField(
         label='Violation Order',
         choices=[
-            (1, 'Ascending'),
-            (2, 'Descending')
+            (1, 'Low to high'),
+            (2, 'High to low')
         ])
     serch_name = StringField(
         label='Name'
@@ -29,6 +29,7 @@ class ClientsForm(FlaskForm):
     )
 
     submit = SubmitField(label=('Submit'))
+
     status_order = 0
     status_violation = 0
     status_name = 0
@@ -99,14 +100,14 @@ class VehiclesForm(FlaskForm):
     select_price = MultiCheckboxField(
         label='Price',
         choices=[
-            (1, 'Ascending Price'),
-            (2, 'Descending Price')
+            (1, 'Low to high'),
+            (2, 'High to low')
         ])
     select_condition = MultiCheckboxField(
         label='Condition',
         choices=[
-            (1, 'Ascending'),
-            (2, 'Descending')
+            (1, 'Low to high'),
+            (2, 'High to low')
         ])
     serch_brand = StringField(
         label='Brand'
@@ -198,10 +199,10 @@ class EditAndDeleteVehicleForm(FlaskForm):
 
 class ParkingsForm(FlaskForm):
     select_parking = MultiCheckboxField(
-        label='ID',
+        label='Parking ID',
         choices=[
-            (1, 'Ascending ID'),
-            (2, 'Descending ID')
+            (1, 'Low to high'),
+            (2, 'High to low')
         ])
 
     serch_vin = StringField(
@@ -248,16 +249,16 @@ class EditAndDeleteParkingForm(FlaskForm):
 
 class RentsForm(FlaskForm):
     select_rent = MultiCheckboxField(
-        label='Rent',
+        label='Rent ID',
         choices=[
-            (1, 'Ascending ID'),
-            (2, 'Descending ID')
+            (1, 'Low to high'),
+            (2, 'High to low')
         ])
     select_client_id = MultiCheckboxField(
         label='Client ID',
         choices=[
-            (1, 'Ascending'),
-            (2, 'Descending')
+            (1, 'Low to high'),
+            (2, 'High to low')
         ])
     select_date = MultiCheckboxField(
         label='Client ID',
