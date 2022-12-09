@@ -242,7 +242,7 @@ class EditAndDeleteParkingForm(FlaskForm):
         label='VIN',
         validators=[
             DataRequired(),
-            Length(min=18, max=18),
+            Length(min=17, max=18),
             Regexp('^[A-HJ-NPR-Za-hj-npr-z\d]{8}[\dX][A-HJ-NPR-Za-hj-npr-z\d]{2}\d{6}$', message="Incorrect VIN")
         ])
 

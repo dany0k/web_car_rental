@@ -24,7 +24,7 @@ def can_rent(vin_number, client_id):
         return 3
     elif ids == None:
         return 4
-    elif cond == 0:
+    elif cond == 1:
         return 2
     elif not len(is_rented) == 0:
         if is_rented[0].get_end_date() == 'IN_RENT':
@@ -216,6 +216,8 @@ def edit_vehicle(vin_number):
     """Edit vehicle from Vehicle table"""
     cur_vehicle = db.session.query(Vehicle)\
         .filter(Vehicle.vin_number == vin_number).first()
+    cur_parking = db.session.query(Parking)\
+        .filter(Parking.vin_number == vin_number).first()
     form = EditAndDeleteVehicleForm()
     # Filling form from DB using GET request
     if request.method == 'GET':
@@ -229,6 +231,7 @@ def edit_vehicle(vin_number):
         form.populate_obj(cur_vehicle)
         if form.delete.data:
             db.session.delete(cur_vehicle)
+            db.session.delete(cur_parking)
             db.session.commit()
             flash('Vehicle was successfully deleted!')
             return redirect(url_for('vehicles', vin_number=vin_number))
@@ -305,9 +308,14 @@ def create_parking():
     if request.method == 'POST' and form.validate_on_submit():  
         if is_vin_exists(form.vin_number._value()):
             new_parking = Parking()
-            form.populate_obj(new_parking)
-            db.session.add(new_parking)
-            db.session.commit()
+            is_vin_parked = db.session.query(Parking.vin_number)\
+                .filter(Parking.vin_number == form.vin_number._value()).one_or_none()
+            if is_vin_parked != None:
+                flash("This VIN arleady registered")
+            else:
+                form.populate_obj(new_parking)
+                db.session.add(new_parking)
+                db.session.commit()
             return redirect(url_for('parkings'))
         else:
             flash("No such VIN")
