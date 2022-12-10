@@ -8,6 +8,10 @@ class Client(db.Model):
     surname = db.Column('surname', db.Text)
     violation = db.Column('violation', db.INTEGER)
 
+    @property
+    def full_name(self):
+        return "%s %s" % (self.firstname, self.surname) 
+
 
 class Vehicle(db.Model):
     __tablename__ = 'vehicle'
@@ -36,8 +40,10 @@ class Rent(db.Model):
     vin_number = db.Column(db.ForeignKey('vehicle.vin_number'))
     begin_date = db.Column('begin_date', db.String(50), unique=False)
     end_date = db.Column('end_date', db.String(50), unique=False)
+    client = db.relationship('Client')
+    vehicle = db.relationship('Vehicle')
 
-
+    @property
     def get_end_date(self):
         return str(self.end_date)
 

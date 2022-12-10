@@ -6,18 +6,18 @@
        <form class='form-horizontal' method='POST' action="">
               {{ form.csrf_token() }}
               <div class="form-group">
-                     {{ form.client_id.label }}
-                     {{ form.client_id(class="form-control") }}
-                     {% for error in form.client_id.errors %}
+                     {{ form.client.label }}
+                     {{ form.client(class="form-control") }}
+                     {% for error in form.client.errors %}
                      <div class="alert alert-danger">
                           {{ error }}
                      </div> 
                      {% endfor%}
               </div>
               <div class="form-group">
-                     {{ form.vin_number.label }}
-                     {{ form.vin_number(class="form-control") }}
-                     {% for error in form.vin_number.errors %}
+                     {{ form.vehicle.label }}
+                     {{ form.vehicle(class="form-control") }}
+                     {% for error in form.vehicle.errors %}
                      <div class="alert alert-danger">
                           {{ error }}
                      </div> 

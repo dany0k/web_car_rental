@@ -1,6 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import widgets, StringField, SubmitField, RadioField, SelectMultipleField, BooleanField
+from wtforms import widgets, StringField, SubmitField, RadioField, SelectMultipleField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Length, Regexp
+from wtforms_alchemy.fields import QuerySelectField
+from app_config import app, db
+from model import *
 
 
 class MultiCheckboxField(SelectMultipleField):
@@ -300,20 +303,29 @@ class RentsForm(FlaskForm):
 class CreateRentForm(FlaskForm):
     submit = SubmitField(label=('Submit'))
 
-    client_id = StringField(
-        label='ClientID', 
-        validators=[
-            DataRequired(message="This field must be filled"),
-            Length(min=1, max=50, message="Min length 1, Max length 50"),
-            Regexp('^[0-9]+$', message='Client ID must be a numeric value')
-        ])
-    vin_number = StringField(
-        label='VIN',
-        validators=[
-            DataRequired(), 
-            Length(min=17, max=18),
-            Regexp('^[A-HJ-NPR-Za-hj-npr-z\d]{8}[\dX][A-HJ-NPR-Za-hj-npr-z\d]{2}\d{6}$', message="Incorrect VIN")
-            ])
+    client = QuerySelectField(
+        label='Client',
+        query_factory=lambda: db.session.query(Client).order_by(
+            Client.firstname,
+            Client.surname).all(),
+        get_pk=lambda c: c.client_id,
+        get_label=lambda c: c.full_name,
+        blank_text='None',
+        allow_blank=True,
+        validators=[DataRequired()]
+    )
+
+    vehicle = QuerySelectField(
+        label='Vehicle',
+        query_factory=lambda: db.session.query(Vehicle).order_by(
+            Vehicle.vin_number).all(),
+        get_pk=lambda v: v.vin_number,
+        get_label=lambda v: v.brand,
+        blank_text='None',
+        allow_blank=True,
+        validators=[DataRequired()]
+    )
+
     begin_date = StringField(
         label='Begin Date',
         validators=[
@@ -331,21 +343,29 @@ class CreateRentForm(FlaskForm):
 class EditAndDeleteRentForm(FlaskForm):
     submit = SubmitField(label=('Submit'))
     delete = SubmitField(label=('Delete'))
+    client = QuerySelectField(
+        label='Client',
+        query_factory=lambda: db.session.query(Client).order_by(
+            Client.firstname,
+            Client.surname).all(),
+        get_pk=lambda c: c.client_id,
+        get_label=lambda c: c.full_name,
+        blank_text='Не указано',
+        allow_blank=True,
+        validators=[DataRequired()]
+    )
+    
+    vehicle = QuerySelectField(
+        label='Vehicle',
+        query_factory=lambda: db.session.query(Vehicle).order_by(
+            Vehicle.vin_number).all(),
+        get_pk=lambda v: v.vin_number,
+        get_label=lambda v: v.brand,
+        blank_text='Не указано',
+        allow_blank=True,
+        validators=[DataRequired()]
+    )
 
-    client_id = StringField(
-        label='ClientID', 
-        validators=[
-            DataRequired(message="This field must be filled"),
-            Length(min=1, max=50, message="Min length 1, Max length 50"),
-            Regexp('^[0-9]+$', message='Client ID must be a numeric value')
-        ])
-    vin_number = StringField(
-        label='VIN',
-        validators=[
-            DataRequired(), 
-            Length(min=17, max=18),
-            Regexp('^[A-HJ-NPR-Za-hj-npr-z\d]{8}[\dX][A-HJ-NPR-Za-hj-npr-z\d]{2}\d{6}$', message="Incorrect VIN")
-            ])
     begin_date = StringField(
         label='Begin Date',
         validators=[

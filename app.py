@@ -393,24 +393,16 @@ def parkings():
 @app.route('/create-rent', methods=('GET', 'POST'))
 def create_rent():
     """Insert rent into Rent table"""
-    form = CreateRentForm()
+    form = CreateRentForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
-        rentable = can_rent(form.vin_number._value(), form.client_id._value())
-        if  rentable == 1:
-            flash('This car is in rent')
-        elif rentable == 2:
-            flash('This car is unavailable')
-        elif rentable == 3:
-            flash('No such VIN')
-        elif rentable == 4:
-            flash('No such ClientID')
-        
-        else:
-            new_rent = Rent()
-            form.populate_obj(new_rent)
-            db.session.add(new_rent)
-            db.session.commit()
-            return redirect(url_for('rents'))
+        new_rent = Rent()
+        new_rent.client_id = form.client.data.client_id
+        new_rent.vin_number = form.vehicle.data.vin_number
+        new_rent.begin_date = form.begin_date.data
+        new_rent.end_date = form.end_date.data
+        db.session.add(new_rent)
+        db.session.commit()
+        return redirect(url_for('rents'))
     return render_template(
         './rent/create-rent.html',
         form=form
@@ -422,16 +414,19 @@ def edit_rent(rent_id):
     """Edit rent from Rent table"""
     cur_rent = db.session.query(Rent)\
         .filter(Rent.rent_id == rent_id).first()
-    form = EditAndDeleteRentForm()
+    form = EditAndDeleteRentForm(request.form)
     # Filling form from DB using GET request
     if request.method == 'GET':
-        form.client_id.data = cur_rent.client_id
-        form.vin_number.data = cur_rent.vin_number
+        form.client.data = cur_rent.client
+        form.vehicle.data = cur_rent.vehicle
         form.begin_date.data = cur_rent.begin_date
         form.end_date.data = cur_rent.end_date
     # Filling DB from form using POST request
     if request.method == 'POST' and form.validate_on_submit():
-        form.populate_obj(cur_rent)
+        cur_rent.client_id = form.client.data.client_id
+        cur_rent.vin_number = form.vehicle.data.vin_number
+        cur_rent.begin_date = form.begin_date.data
+        cur_rent.end_date = form.end_date.data
         if form.delete.data:
             db.session.delete(cur_rent)
             db.session.commit()
